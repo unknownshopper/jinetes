@@ -1,0 +1,55 @@
+/* PDF / impresión */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  /* Mantener colores/fondos al imprimir (si el navegador lo permite) */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Ocultar controles al imprimir */
+  .pdf-btn {
+    display: none !important;
+  }
+
+  /* Utilidades para paginación */
+  .pdf-first-page {
+    /* A4 content height = 297mm - (14mm top + 14mm bottom) = 269mm */
+    min-height: 269mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .pdf-page-break {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  .pdf-keep {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Evitar que se partan secciones/tarjetas entre páginas */
+  header,
+  section,
+  footer,
+  .rounded-2xl {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}

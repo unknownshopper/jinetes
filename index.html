@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta POS - Los de Costilla</title>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos FontAwesome (CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-white text-gray-900 font-sans antialiased">
+
+    <!-- Encabezado / Hero (Fondo blanco + separadores de color) -->
+    <div class="pdf-first-page">
+    <div class="h-2 w-full bg-amber-700"></div>
+    <header class="bg-white py-10 px-6 border-b border-amber-100 text-center relative">
+        <button type="button" id="downloadPdf" class="pdf-btn absolute right-4 top-4 md:right-6 md:top-6 inline-flex items-center gap-2 rounded-full bg-amber-700 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-sm hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-300">
+            <i class="fa-solid fa-file-arrow-down"></i>
+            Descargar PDF
+        </button>
+        <div class="max-w-5xl mx-auto">
+            <div class="flex flex-col items-center gap-4">
+                <img src="tus.png" alt="The Unknown Shopper" class="block w-auto h-auto max-h-14 md:max-h-16" />
+                <span class="bg-amber-100 text-amber-900 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-amber-200">Propuesta Tecnológica Exclusiva</span>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-extrabold mt-5 tracking-tight text-gray-900">Sistema POS a la Medida</h1>
+            <p class="text-lg md:text-2xl text-gray-700 mt-2 font-medium">Control Total Centralizado para "Los de Costilla"</p>
+            <div class="mt-5 text-sm text-gray-700 border-t border-gray-200 pt-4 inline-block px-4">
+                <p><strong>Presentado a:</strong> Sr. Miguel León (Dueño)</p>
+                <p><strong>Alcance:</strong> Sucursal Tamulté & Sucursal Atasta</p>
+            </div>
+        </div>
+    </header>
+    <div class="h-2 w-full bg-amber-700"></div>
+    </div>
+
+    <main class="max-w-5xl mx-auto px-4 py-12 space-y-12">
+
+
+        
+
+        <!-- SECCIÓN 1: Los Dolores que vamos a Aliviar -->
+        <section class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-heart-circle-bolt text-red-600"></i> ¿Qué dolores operativos le vamos a aliviar?
+            </h2>
+            <p class="text-gray-600 mb-6 text-lg">Don Miguel, operar sucursales de alta rotación (tacos y tortas) a la distancia genera puntos ciegos. Este software nativo está diseñado para eliminar de raíz los siguientes problemas:</p>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="p-5 bg-red-50/60 rounded-xl border border-red-100">
+                    <h3 class="font-bold text-red-900 text-lg flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-eye-slash"></i> El dolor de la "Caja Negra"
+                    </h3>
+                    <p class="text-gray-700 text-sm">Ya no tendrá que esperar al cierre de turno o ir físicamente para saber cuánto han vendido. Sabrá la venta exacta al segundo desde su celular.</p>
+                </div>
+
+                <div class="p-5 bg-red-50/60 rounded-xl border border-red-100">
+                    <h3 class="font-bold text-red-900 text-lg flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-weight-scale"></i> Fugas e incertidumbre en la Costilla
+                    </h3>
+                    <p class="text-gray-700 text-sm">La costilla es su insumo rey. Cada venta descontará gramos automáticos del inventario. Si se vendieron 40 tortas, el sistema calculará exactamente cuánta carne debe faltar.</p>
+                </div>
+
+                <div class="p-5 bg-red-50/60 rounded-xl border border-red-100">
+                    <h3 class="font-bold text-red-900 text-lg flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-receipt"></i> Tickets perdidos y órdenes lentas
+                    </h3>
+                    <p class="text-gray-700 text-sm">Evite retrasos en cocina. Las órdenes tomadas en caja se mandan digitalmente a la pantalla de preparación o tiquera de la cocina al instante.</p>
+                </div>
+
+                <div class="p-5 bg-red-50/60 rounded-xl border border-red-100">
+                    <h3 class="font-bold text-red-900 text-lg flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-shield-halved"></i> Cancelaciones sospechosas
+                    </h3>
+                    <p class="text-gray-700 text-sm">Su software registrará qué usuario cajero eliminó un producto o modificó una cuenta, bloqueando malas prácticas operativas.</p>
+                </div>
+            </div>
+        </section>
+
+        <img src="diag.png" alt="diagrama">
+
+
+
+                <!-- SECCIÓN 2: El MVP de Hardware -->
+        <section class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-print text-amber-700"></i> Equipamiento del MVP (Mínimo Producto Viable)
+            </h2>
+            <p class="text-gray-600 mb-6 text-sm">Para arrancar de inmediato sin inversiones infladas, cada sucursal (Tamulté y Atasta) requiere la siguiente infraestructura tecnológica básica para captura e impresión:</p>
+
+            <div class="space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-50 rounded-xl border border-gray-200 gap-4">
+                    <div>
+                        <h3 class="font-bold text-gray-900">Estación de Captura Principal</h3>
+                        <p class="text-xs text-gray-500">Tablet Android / iPad de 10" o Laptop básica para el cajero.</p>
+                    </div>
+                    <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded border border-amber-200">1 Unidad por Sucursal</span>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-50 rounded-xl border border-gray-200 gap-4">
+                    <div>
+                        <h3 class="font-bold text-gray-900">Impresora Térmica de Tickets de Venta (Comprobante)</h3>
+                        <p class="text-xs text-gray-500">Tiquera térmica de 80mm con conexión USB / Bluetooth.</p>
+                    </div>
+                    <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded border border-amber-200">1 Unidad por Sucursal</span>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-50 rounded-xl border border-gray-200 gap-4">
+                    <div>
+                        <h3 class="font-bold text-gray-900">Impresora de Comandos para Cocina (Opcional Digital)</h3>
+                        <p class="text-xs text-gray-500">Impresora térmica dedicada a producción o una Pantalla / Monitor de apoyo.</p>
+                    </div>
+                    <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded border border-amber-200">1 Unidad por Sucursal</span>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl flex gap-3 text-sm text-blue-800">
+                <i class="fa-solid fa-circle-info mt-0.5 text-blue-600"></i>
+                <p><strong>Nota de desarrollo:</strong> El código HTML/JS se comunicará de manera nativa con las tiqueras mediante protocolos de impresión estándar (ESC/POS) asegurando rapidez en el despacho.</p>
+            </div>
+        </section>
+
+
+
+                <!-- SECCIÓN 3: Costos y Soporte -->
+        <section class="grid md:grid-cols-2 gap-8">
+            
+            <!-- Costo del Desarrollo -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div>
+                    <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Inversión Única</span>
+                    <h2 class="text-xl font-bold text-gray-900 mt-2 mb-4"><i class="fa-solid fa-code text-emerald-600"></i> Costo del Desarrollo</h2>
+                    <p class="text-gray-600 text-sm mb-6">Incluye el diseño de la interfaz (HTML/CSS/JS), bases de datos en tiempo real (Firebase), roles de usuario y panel administrativo unificado para monitorear ambas sucursales.</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Presupuesto del Software</p>
+                    <p class="text-4xl font-extrabold text-emerald-700 mt-1">$12,500 <span class="text-sm font-normal text-gray-500">MXN</span></p>
+                    <p class="text-xs text-gray-500 mt-2 italic">*No incluye la compra del hardware. Pago 50% anticipo y 50% contra entrega funcional.</p>
+                </div>
+            </div>
+
+            <!-- Mensualidad de Soporte -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Mantenimiento Mensual</span>
+                    <h2 class="text-xl font-bold text-gray-900 mt-2 mb-4"><i class="fa-solid fa-headset text-blue-600"></i> Póliza de Soporte y Nube</h2>
+                    <p class="text-gray-600 text-sm mb-6">Cubre el hospedaje seguro de la app en la nube, el almacenamiento de datos en Firebase, actualizaciones menores del menú, solución de caídas y soporte técnico remoto ante fallas de impresión.</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Costo Mensual</p>
+                    <p class="text-4xl font-extrabold text-blue-700 mt-1">$700 <span class="text-sm font-normal text-gray-500">MXN / mes</span></p>
+                    <p class="text-xs text-gray-500 mt-2 italic">*Comienza a pagarse a partir del segundo mes de estar operando en sucursales.</p>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- SECCIÓN 4: Diagrama de Operación Multisucursal -->
+<section class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 pdf-page-break pdf-keep">
+    <h2 class="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+        <i class="fa-solid fa-network-wired text-amber-700"></i> Arquitectura del Sistema: Operación y Consulta
+    </h2>
+    <p class="text-gray-600 mb-8 text-sm">Visualización de cómo Firebase separa los datos de cada caja física pero los unifica al instante en el celular del Sr. Miguel León.</p>
+
+    <!-- Contenedor del Diagrama -->
+    <div class="space-y-8 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-4 items-center relative">
+        
+        <!-- SUCURSAL 1: TAMULTÉ -->
+        <div class="bg-amber-50/50 p-5 rounded-xl border border-amber-200 shadow-xs relative text-center">
+            <div class="absolute -top-3 left-4 bg-amber-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">Sucursal 1</div>
+            <h3 class="font-bold text-amber-900 text-lg mb-3 mt-1"><i class="fa-solid fa-shop"></i> Los de Costilla - Tamulté</h3>
+            
+            <div class="space-y-2 text-xs">
+                <div class="p-2 bg-white rounded border border-gray-200 flex items-center gap-2">
+                    <i class="fa-solid fa-tablet-screen-button text-amber-600"></i>
+                    <span class="text-gray-700 font-medium text-left">POS Caja Principal (HTML/JS)</span>
+                </div>
+                <div class="p-2 bg-white rounded border border-gray-200 flex items-center gap-2">
+                    <i class="fa-solid fa-print text-gray-500"></i>
+                    <span class="text-gray-600 text-left">Impresión de Tickets Local</span>
+                </div>
+            </div>
+            
+            <!-- Flecha de salida de datos -->
+            <div class="mt-4 text-emerald-600 text-xs font-semibold flex items-center justify-center gap-1">
+                <span>Envío asíncrono</span>
+                <i class="fa-solid fa-arrow-right animate-pulse hidden lg:inline"></i>
+                <i class="fa-solid fa-arrow-down animate-pulse lg:hidden"></i>
+            </div>
+        </div>
+
+        <!-- NÚCLEO: CLOUD FIREBASE (BASE DE DATOS CENTRAL) -->
+        <div class="bg-slate-900 text-white p-6 rounded-xl shadow-md border border-slate-800 text-center space-y-4 relative">
+            <span class="bg-amber-500 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider absolute -top-2 left-1/2 transform -translate-x-1/2">Servidor Central</span>
+            <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-cloud"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-base text-gray-100">Google Firebase Cloud</h3>
+                <p class="text-[11px] text-slate-400 mt-1">Filtrado estricto por atributo de sucursal (`sucursalId`)</p>
+            </div>
+            
+            <!-- Base de datos aisladas lógicamente -->
+            <div class="grid grid-cols-2 gap-2 text-[10px]">
+                <div class="p-2 bg-slate-800 rounded border border-slate-700">
+                    <span class="block font-bold text-amber-400">Colección Ventas</span>
+                    <span class="text-slate-400">ID: "tamulte"</span>
+                </div>
+                <div class="p-2 bg-slate-800 rounded border border-slate-700">
+                    <span class="block font-bold text-amber-400">Colección Ventas</span>
+                    <span class="text-slate-400">ID: "atasta"</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUCURSAL 2: ATASTA -->
+        <div class="bg-amber-50/50 p-5 rounded-xl border border-amber-200 shadow-xs relative text-center">
+            <div class="absolute -top-3 left-4 bg-amber-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">Sucursal 2</div>
+            <h3 class="font-bold text-amber-900 text-lg mb-3 mt-1"><i class="fa-solid fa-shop"></i> Los de Costilla - Atasta</h3>
+            
+            <div class="space-y-2 text-xs">
+                <div class="p-2 bg-white rounded border border-gray-200 flex items-center gap-2">
+                    <i class="fa-solid fa-tablet-screen-button text-amber-600"></i>
+                    <span class="text-gray-700 font-medium text-left">POS Caja Principal (HTML/JS)</span>
+                </div>
+                <div class="p-2 bg-white rounded border border-gray-200 flex items-center gap-2">
+                    <i class="fa-solid fa-print text-gray-500"></i>
+                    <span class="text-gray-600 text-left">Impresión de Tickets Local</span>
+                </div>
+            </div>
+            
+            <!-- Flecha de salida de datos -->
+            <div class="mt-4 text-emerald-600 text-xs font-semibold flex items-center justify-center gap-1">
+                <i class="fa-solid fa-arrow-left animate-pulse hidden lg:inline"></i>
+                <i class="fa-solid fa-arrow-up animate-pulse lg:hidden"></i>
+                <span>Envío asíncrono</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ACCESO DEL DUEÑO (EL MÓVIL DEL SR. MIGUEL) -->
+    <div class="mt-8 pt-8 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6 bg-slate-50 p-6 rounded-xl">
+        <div class="space-y-2 max-w-md">
+            <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase">Consola de Mando Global</span>
+            <h3 class="font-bold text-gray-900 text-lg flex items-center gap-2">
+                <i class="fa-solid fa-mobile-screen-button text-blue-600"></i> Consulta Gerencial (Dashboard Móvil)
+            </h3>
+            <p class="text-xs text-gray-600">El celular del dueño se conecta directamente al nodo central de la nube, saltándose la red física de las sucursales. Esto garantiza que la consulta de métricas no interfiera ni sature el flujo de cobro de los cajeros.</p>
+        </div>
+        
+        <!-- Vista del Celular del Dueño -->
+        <div class="w-full md:w-64 bg-gray-900 text-white rounded-2xl p-4 shadow-lg border-4 border-gray-800 text-center space-y-3">
+            <div class="w-8 h-1 bg-gray-700 rounded-full mx-auto mb-2"></div>
+            <p class="text-[10px] text-amber-400 font-bold uppercase tracking-widest">Dashboard Don Miguel</p>
+            
+            <!-- Datos ficticios del celular en tiempo real -->
+            <div class="space-y-1.5 text-left">
+                <div class="bg-gray-800 p-2 rounded text-[11px] flex justify-between">
+                    <span class="text-gray-400">📍 Tams. Hoy:</span>
+                    <span class="font-bold text-emerald-400">$8,450.00</span>
+                </div>
+                <div class="bg-gray-800 p-2 rounded text-[11px] flex justify-between">
+                    <span class="text-gray-400">📍 Atas. Hoy:</span>
+                    <span class="font-bold text-emerald-400">$6,210.00</span>
+                </div>
+                <div class="bg-gray-800 p-2 rounded text-[11px] flex justify-between items-center">
+                    <span class="text-gray-400">🐷 Costilla Total:</span>
+                    <span class="bg-red-900/50 text-red-300 font-bold px-1.5 py-0.5 rounded text-[9px]">-14.5 kg</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+        <!-- Beneficio Extra Firebase -->
+        <section class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <h3 class="text-lg font-bold text-gray-900 mb-2"><i class="fa-solid fa-bolt text-amber-700"></i> Ventaja Tecnológica Exclusiva</h3>
+            <p class="text-sm text-gray-700 max-w-2xl mx-auto">Al desarrollar usando la arquitectura de <strong>Firebase</strong>, si el internet de Atasta o Tamulté falla momentáneamente, las cajas pueden seguir registrando pedidos. El sistema se sincronizará automáticamente con la nube en cuanto regrese la señal, garantizando que el negocio nunca se detenga.</p>
+        </section>
+    </main>
+
+    <div class="h-2 w-full bg-amber-700"></div>
+
+    <section class="bg-white max-w-5xl mx-auto px-4 pb-6">
+        <div class="mt-2 rounded-2xl border border-gray-100 bg-white p-6 text-sm text-gray-800">
+            <p class="font-semibold">Atentamente,</p>
+            <p class="mt-2 font-bold text-gray-900">Alberto García</p>
+            <p class="text-gray-600">Publicista</p>
+        </div>
+    </section>
+
+    <footer class="bg-white text-center py-8 border-t border-gray-200 text-xs text-gray-600">
+        <p>© 2026 Propuesta de Desarrollo de Software a la Medida para Los de Costilla.</p>
+        <p class="mt-2">
+            <a href="https://unknownshoppers.com" target="_blank" rel="noopener noreferrer" class="font-semibold text-gray-600 hover:text-gray-900">The Unknown Shopper</a>
+        </p>
+    </footer>
+
+    <!-- Bloque JavaScript para inicializar el entorno futuro de Firebase -->
+    <script>
+        document.getElementById("downloadPdf")?.addEventListener("click", () => window.print());
+    </script>
+
+    <script type="module">
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "://firebaseapp.com",
+            projectId: "los-de-costilla-pos",
+            storageBucket: "://appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+        console.log("Entorno de desarrollo listo para 'Los de Costilla'.");
+    </script>
+</body>
+</html>

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ventas - Los de Costilla</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" referrerpolicy="no-referrer" />
+  <style>
+    @media print {
+      @page { size: A4; margin: 12mm; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+  <header class="no-print sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 py-3">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <img src="tus.png" alt="The Unknown Shopper" class="h-8 w-auto" />
+          <div class="min-w-0">
+            <p class="text-xs text-gray-500 leading-4">Los de Costilla</p>
+            <h1 class="text-sm font-bold truncate">Ventas / Status (Demo)</h1>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="comand.html" class="inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50">
+            <i class="fa-solid fa-cash-register"></i>
+            Comandero
+          </a>
+          <button id="btnPrint" type="button" class="inline-flex items-center gap-2 rounded-full bg-amber-700 px-3 py-2 text-xs font-bold text-white hover:bg-amber-800">
+            <i class="fa-solid fa-print"></i>
+            PDF
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-3 grid grid-cols-3 gap-2">
+        <button data-scope="global" type="button" class="scopeBtn rounded-xl border px-3 py-3 text-left">
+          <p class="text-xs text-gray-500">Vista</p>
+          <p class="text-sm font-extrabold">Global</p>
+        </button>
+        <button data-scope="tamulte" type="button" class="scopeBtn rounded-xl border px-3 py-3 text-left">
+          <p class="text-xs text-gray-500">Sucursal</p>
+          <p class="text-sm font-extrabold">Tamulté</p>
+        </button>
+        <button data-scope="atasta" type="button" class="scopeBtn rounded-xl border px-3 py-3 text-left">
+          <p class="text-xs text-gray-500">Sucursal</p>
+          <p class="text-sm font-extrabold">Atasta</p>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <!-- Dashboard Don Miguel (status de venta) -->
+    <section class="rounded-2xl border border-gray-200 bg-slate-950 text-white p-5 shadow-sm">
+      <div class="flex items-center justify-between">
+        <p class="text-xs font-extrabold tracking-widest text-amber-400">DASHBOARD DON MIGUEL</p>
+        <p id="todayLabel" class="text-xs text-slate-300"></p>
+      </div>
+
+      <div class="mt-4 space-y-2">
+        <div class="rounded-xl bg-slate-900/70 border border-slate-800 px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-2 text-sm font-semibold">
+            <span class="text-slate-300">📍</span>
+            <span class="text-slate-200">Tams. Hoy:</span>
+          </div>
+          <div class="text-sm font-extrabold text-emerald-400" id="tamsToday">$0</div>
+        </div>
+
+        <div class="rounded-xl bg-slate-900/70 border border-slate-800 px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-2 text-sm font-semibold">
+            <span class="text-slate-300">📍</span>
+            <span class="text-slate-200">Atas. Hoy:</span>
+          </div>
+          <div class="text-sm font-extrabold text-emerald-400" id="atasToday">$0</div>
+        </div>
+
+        <div class="rounded-xl bg-slate-900/70 border border-slate-800 px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-2 text-sm font-semibold">
+            <span class="text-slate-300">🐷</span>
+            <span class="text-slate-200">Costilla Total:</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] text-slate-400">(módulo extra)</span>
+            <span class="rounded-full bg-red-900/40 border border-red-900 px-2 py-1 text-[11px] font-extrabold text-red-200">—</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KPIs -->
+    <section class="grid grid-cols-2 gap-3">
+      <div class="rounded-2xl border border-gray-200 p-4">
+        <p class="text-xs text-gray-500">Total hoy (scope)</p>
+        <p id="kpiTotal" class="text-xl font-extrabold mt-1">$0</p>
+      </div>
+      <div class="rounded-2xl border border-gray-200 p-4">
+        <p class="text-xs text-gray-500">Órdenes hoy</p>
+        <p id="kpiOrders" class="text-xl font-extrabold mt-1">0</p>
+      </div>
+      <div class="rounded-2xl border border-gray-200 p-4">
+        <p class="text-xs text-gray-500">Ticket promedio</p>
+        <p id="kpiAvg" class="text-xl font-extrabold mt-1">$0</p>
+      </div>
+      <div class="rounded-2xl border border-gray-200 p-4">
+        <p class="text-xs text-gray-500">Última venta</p>
+        <p id="kpiLast" class="text-sm font-extrabold mt-1">—</p>
+      </div>
+    </section>
+
+    <!-- Top vendidos -->
+    <section class="rounded-2xl border border-gray-200 p-4">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base font-extrabold">Top vendidos (hoy)</h2>
+          <p class="text-xs text-gray-500">Barras por unidades vendidas (scope)</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btnSeedDay" type="button" class="no-print inline-flex items-center gap-2 rounded-full bg-emerald-700 px-3 py-2 text-xs font-extrabold text-white hover:bg-emerald-800">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            Generar día demo
+          </button>
+          <button id="btnSeedBurst" type="button" class="no-print inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-2 text-xs font-extrabold text-emerald-900 hover:bg-emerald-100">
+            <i class="fa-solid fa-bolt"></i>
+            +10 ventas
+          </button>
+          <button id="btnSeedMkt" type="button" class="no-print inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-200 px-3 py-2 text-xs font-extrabold text-blue-900 hover:bg-blue-100">
+            <i class="fa-solid fa-bullhorn"></i>
+            Seed marketing
+          </button>
+          <button id="btnClear" type="button" class="no-print inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50">
+            <i class="fa-solid fa-trash"></i>
+            Limpiar demo
+          </button>
+          <button id="btnRefresh" type="button" class="inline-flex items-center gap-2 rounded-full bg-gray-900 px-3 py-2 text-xs font-bold text-white hover:bg-black">
+            <i class="fa-solid fa-rotate"></i>
+            Actualizar
+          </button>
+        </div>
+      </div>
+
+      <div id="topList" class="mt-4 space-y-3"></div>
+      <p id="emptyTop" class="mt-3 hidden text-sm text-gray-600">Aún no hay ventas registradas. Abre <span class="font-semibold">Comandero</span> y cierra una venta para ver el dashboard.</p>
+    </section>
+
+    <!-- Ritmo por hora (simple) -->
+    <section class="rounded-2xl border border-gray-200 p-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-extrabold">Ritmo por hora</h2>
+          <p class="text-xs text-gray-500">Órdenes por hora (hoy)</p>
+        </div>
+      </div>
+      <div id="hourBars" class="mt-4 grid grid-cols-12 gap-1 items-end"></div>
+      <div class="mt-2 flex justify-between text-[10px] text-gray-500">
+        <span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>23h</span>
+      </div>
+    </section>
+
+    <!-- Marketing / clientes (módulo) -->
+    <section class="rounded-2xl border border-gray-200 p-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-extrabold">Marketing (módulo)</h2>
+          <p class="text-xs text-gray-500">Base de datos de clientes, campañas, cupones</p>
+        </div>
+        <span class="rounded-full bg-amber-100 border border-amber-200 px-3 py-1 text-xs font-extrabold text-amber-900">Extra</span>
+      </div>
+      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="rounded-2xl border border-dashed border-gray-300 p-4 text-gray-700">
+          <p class="text-sm font-extrabold"><i class="fa-solid fa-user-group"></i> Clientes</p>
+          <p class="text-xs mt-1 text-gray-600">Registro básico + historial de compra</p>
+          <p class="mt-2 text-xs"><span class="text-gray-500">Total:</span> <span id="mktClients" class="font-extrabold">0</span></p>
+        </div>
+        <div class="rounded-2xl border border-dashed border-gray-300 p-4 text-gray-700">
+          <p class="text-sm font-extrabold"><i class="fa-brands fa-whatsapp"></i> Campañas</p>
+          <p class="text-xs mt-1 text-gray-600">Mensajes a clientes (WhatsApp API)</p>
+          <p class="mt-2 text-xs"><span class="text-gray-500">Mensajes:</span> <span id="mktMsgs" class="font-extrabold">0</span></p>
+        </div>
+        <div class="rounded-2xl border border-dashed border-gray-300 p-4 text-gray-700 opacity-70">
+          <p class="text-sm font-extrabold"><i class="fa-solid fa-ticket"></i> Cupones</p>
+          <p class="text-xs mt-1">Promos por fecha / producto / sucursal</p>
+        </div>
+        <div class="rounded-2xl border border-dashed border-gray-300 p-4 text-gray-700 opacity-70">
+          <p class="text-sm font-extrabold"><i class="fa-solid fa-chart-line"></i> Retención</p>
+          <p class="text-xs mt-1">Recurrentes, frecuencia, ticket promedio</p>
+        </div>
+      </div>
+
+      <div class="mt-4 rounded-2xl border border-gray-200 p-4">
+        <div class="flex items-center justify-between">
+          <p class="text-sm font-extrabold">Log de mensajes (demo)</p>
+          <span class="text-xs text-gray-500">manual/API (extra)</span>
+        </div>
+        <div id="mktLog" class="mt-3 space-y-2"></div>
+        <p id="mktEmpty" class="mt-2 text-sm text-gray-600">Aún no hay mensajes. Usa <span class="font-semibold">Seed marketing</span>.</p>
+      </div>
+    </section>
+
+    <footer class="text-center text-xs text-gray-500 py-8">
+      <p>Demo local (HTML/JS). En producción: datos en nube + roles + alertas.</p>
+    </footer>
+  </main>
+
+  <script>
+    const state = {
+      scope: localStorage.getItem("ldc_scope") || "global"
+    };
+
+    const elTodayLabel = document.getElementById("todayLabel");
+    const elTamsToday = document.getElementById("tamsToday");
+    const elAtasToday = document.getElementById("atasToday");
+    const elKpiTotal = document.getElementById("kpiTotal");
+    const elKpiOrders = document.getElementById("kpiOrders");
+    const elKpiAvg = document.getElementById("kpiAvg");
+    const elKpiLast = document.getElementById("kpiLast");
+    const elTopList = document.getElementById("topList");
+    const elEmptyTop = document.getElementById("emptyTop");
+    const elHourBars = document.getElementById("hourBars");
+
+    document.getElementById("btnPrint").addEventListener("click", () => window.print());
+    document.getElementById("btnRefresh").addEventListener("click", () => render());
+
+    document.getElementById("btnSeedDay").addEventListener("click", () => {
+      seedDayDemo();
+      render();
+    });
+
+    document.getElementById("btnSeedBurst").addEventListener("click", () => {
+      seedBurst(10);
+      render();
+    });
+
+    document.getElementById("btnSeedMkt").addEventListener("click", () => {
+      seedMarketing();
+      render();
+    });
+
+    const btnClear = document.getElementById("btnClear");
+    btnClear.addEventListener("click", () => {
+      const ok = confirm("Esto borra ventas guardadas en este navegador (solo demo). ¿Continuar?");
+      if (!ok) return;
+      localStorage.removeItem("ldc_sales");
+      render();
+    });
+
+    function money(n) { return "$" + Number(n || 0).toLocaleString("es-MX"); }
+
+    function setSelected(btns, predicate) {
+      btns.forEach(b => {
+        const on = predicate(b);
+        b.classList.toggle("border-amber-400", on);
+        b.classList.toggle("bg-amber-50", on);
+        b.classList.toggle("border-gray-200", !on);
+      });
+    }
+
+    function getSales() {
+      try {
+        const raw = localStorage.getItem("ldc_sales");
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function setSales(sales) {
+      const capped = sales.slice(-1000);
+      localStorage.setItem("ldc_sales", JSON.stringify(capped));
+    }
+
+    function getClients() {
+      try {
+        const raw = localStorage.getItem("ldc_clients");
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function setClients(clients) {
+      localStorage.setItem("ldc_clients", JSON.stringify(clients.slice(-500)));
+    }
+
+    function getMessageLog() {
+      try {
+        const raw = localStorage.getItem("ldc_message_log");
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function setMessageLog(log) {
+      localStorage.setItem("ldc_message_log", JSON.stringify(log.slice(-500)));
+    }
+
+    const PRODUCTS = [
+      { id: "taco_despeinada", name: "Taco de Despeinada", price: 23, w: 10 },
+      { id: "taco_cochinita", name: "Taco de Cochinita", price: 23, w: 10 },
+      { id: "taco_lechon", name: "Taco de Lechón", price: 23, w: 7 },
+      { id: "taco_chicharron", name: "Taco de Chicharrón", price: 23, w: 6 },
+      { id: "taco_longaniza", name: "Taco de Longaniza", price: 23, w: 6 },
+      { id: "taco_costilla", name: "Taco de Costilla a la sal", price: 30, w: 5 },
+      { id: "torta_costilla", name: "Torta de Costilla a la sal", price: 80, w: 5 },
+      { id: "torta_cochinita", name: "Torta de Cochinita", price: 60, w: 4 },
+      { id: "consome", name: "Consomé de costilla", price: 90, w: 3 },
+      { id: "consome_llevar", name: "Consomé para llevar", price: 100, w: 2 },
+      { id: "agua_jamaica", name: "Agua de Jamaica", price: 25, w: 6 },
+      { id: "agua_horchata", name: "Agua de Horchata", price: 25, w: 6 },
+      { id: "coca_600", name: "Coca 600 ml", price: 30, w: 4 },
+      { id: "cafe", name: "Café", price: 25, w: 2 }
+    ];
+
+    function pickWeighted(list) {
+      const total = list.reduce((s, x) => s + (x.w || 1), 0);
+      let r = Math.random() * total;
+      for (const x of list) {
+        r -= (x.w || 1);
+        if (r <= 0) return x;
+      }
+      return list[list.length - 1];
+    }
+
+    function genSale(ts, branch) {
+      const orderType = Math.random() < 0.15 ? "domicilio" : (Math.random() < 0.55 ? "aqui" : "llevar");
+      const payMethod = Math.random() < 0.7 ? "efectivo" : "transferencia";
+
+      const linesCount = 1 + Math.floor(Math.random() * 4);
+      const chosen = new Map();
+      for (let i = 0; i < linesCount; i++) {
+        const p = pickWeighted(PRODUCTS);
+        const q = 1 + Math.floor(Math.random() * (p.id.startsWith("taco_") ? 3 : 2));
+        chosen.set(p.id, (chosen.get(p.id) || 0) + q);
+      }
+
+      const lines = [...chosen.entries()].map(([id, q]) => {
+        const p = PRODUCTS.find(x => x.id === id);
+        return { id, name: p.name, price: p.price, q };
+      });
+
+      const total = lines.reduce((sum, l) => sum + l.price * l.q, 0);
+      const folioNum = Number(localStorage.getItem("ldc_folio") || "0") + 1;
+      localStorage.setItem("ldc_folio", String(folioNum));
+      const folio = `Folio #${String(folioNum).padStart(4, "0")}`;
+
+      return { folio, ts, branch, orderType, payMethod, total, lines };
+    }
+
+    function seedBurst(n) {
+      const sales = getSales();
+      for (let i = 0; i < n; i++) {
+        const branch = Math.random() < 0.55 ? "tamulte" : "atasta";
+        const ts = Date.now() - Math.floor(Math.random() * 60 * 60 * 1000);
+        sales.push(genSale(ts, branch));
+      }
+      setSales(sales);
+    }
+
+    function seedDayDemo() {
+      const ok = confirm("Generar ventas demo para HOY (solo en este navegador). ¿Continuar?");
+      if (!ok) return;
+
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 7, 0, 0, 0).getTime();
+      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 22, 0, 0, 0).getTime();
+
+      const sales = getSales().filter(s => !isToday(s.ts));
+
+      const totalSales = 85 + Math.floor(Math.random() * 55);
+      for (let i = 0; i < totalSales; i++) {
+        const t = start + Math.floor(Math.random() * (end - start));
+        const hour = new Date(t).getHours();
+        const peak = (hour >= 9 && hour <= 11) || (hour >= 18 && hour <= 20);
+        if (!peak && Math.random() < 0.25) continue;
+
+        const branch = Math.random() < 0.6 ? "tamulte" : "atasta";
+        sales.push(genSale(t, branch));
+      }
+
+      setSales(sales);
+    }
+
+    function seedMarketing() {
+      const ok = confirm("Generar clientes y mensajes demo (solo en este navegador). ¿Continuar?");
+      if (!ok) return;
+
+      const first = ["Ana", "Luis", "Karla", "Miguel", "Sofía", "José", "María", "Carlos", "Diana", "Jorge", "Paola", "Erick"]; 
+      const last = ["Hernández", "García", "López", "Martínez", "Sánchez", "Pérez", "Ramírez", "Torres"]; 
+
+      const clients = getClients();
+      const log = getMessageLog();
+
+      const addClients = 25 + Math.floor(Math.random() * 35);
+      for (let i = 0; i < addClients; i++) {
+        const name = `${first[Math.floor(Math.random() * first.length)]} ${last[Math.floor(Math.random() * last.length)]}`;
+        const phone = `993${String(Math.floor(1000000 + Math.random() * 8999999))}`;
+        clients.push({ id: `c_${Date.now()}_${i}`, name, phone, branch: Math.random() < 0.55 ? "tamulte" : "atasta", createdAt: Date.now() });
+      }
+      setClients(clients);
+
+      const addMsgs = 18 + Math.floor(Math.random() * 25);
+      for (let i = 0; i < addMsgs; i++) {
+        const c = clients[Math.floor(Math.random() * clients.length)];
+        if (!c) break;
+        const channel = Math.random() < 0.7 ? "manual" : "api";
+        const status = channel === "api" ? (Math.random() < 0.85 ? "enviado" : "falló") : "pendiente";
+        log.push({
+          id: `m_${Date.now()}_${i}`,
+          ts: Date.now() - Math.floor(Math.random() * 36 * 60 * 60 * 1000),
+          clientName: c.name,
+          phone: c.phone,
+          branch: c.branch,
+          channel,
+          status,
+          template: Math.random() < 0.5 ? "Promo 2x" : "Recordatorio"
+        });
+      }
+      setMessageLog(log);
+    }
+
+    function isToday(ts) {
+      const d = new Date(ts);
+      const now = new Date();
+      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+    }
+
+    function filterByScope(sales) {
+      if (state.scope === "global") return sales;
+      return sales.filter(s => s.branch === state.scope);
+    }
+
+    function sumTotal(sales) {
+      return sales.reduce((sum, s) => sum + Number(s.total || 0), 0);
+    }
+
+    function countOrders(sales) {
+      return sales.length;
+    }
+
+    function lastSale(sales) {
+      if (!sales.length) return null;
+      return sales.slice().sort((a, b) => Number(b.ts) - Number(a.ts))[0];
+    }
+
+    function buildTop(sales) {
+      const map = new Map(); // id -> {name, units}
+      for (const s of sales) {
+        for (const l of (s.lines || [])) {
+          const key = l.id;
+          const cur = map.get(key) || { id: l.id, name: l.name || l.id, units: 0 };
+          cur.units += Number(l.q || 0);
+          map.set(key, cur);
+        }
+      }
+      return [...map.values()].sort((a, b) => b.units - a.units).slice(0, 12);
+    }
+
+    function renderTop(top) {
+      elTopList.innerHTML = "";
+      elEmptyTop.classList.toggle("hidden", top.length !== 0);
+      if (!top.length) return;
+
+      const max = Math.max(...top.map(t => t.units));
+      for (const t of top) {
+        const pct = max ? Math.round((t.units / max) * 100) : 0;
+        const row = document.createElement("div");
+        row.className = "rounded-2xl border border-gray-100 bg-gray-50 p-4";
+        row.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-extrabold truncate">${t.name}</p>
+              <p class="text-xs text-gray-600">${t.units} unidad(es)</p>
+            </div>
+            <span class="text-xs font-extrabold text-gray-900">${pct}%</span>
+          </div>
+          <div class="mt-3 h-2 w-full rounded-full bg-white border border-gray-200 overflow-hidden">
+            <div class="h-full bg-amber-700" style="width:${pct}%"></div>
+          </div>
+        `;
+        elTopList.appendChild(row);
+      }
+    }
+
+    function buildHourly(sales) {
+      const arr = new Array(24).fill(0);
+      for (const s of sales) {
+        const d = new Date(s.ts);
+        const h = d.getHours();
+        arr[h] += 1;
+      }
+      return arr;
+    }
+
+    function renderHourly(bars) {
+      elHourBars.innerHTML = "";
+      const max = Math.max(1, ...bars);
+      for (let h = 0; h < 24; h++) {
+        const v = bars[h];
+        const height = Math.round((v / max) * 100);
+        const col = document.createElement("div");
+        col.className = "rounded-md bg-gray-100 border border-gray-200";
+        col.style.height = `${Math.max(8, height)}px`;
+        col.title = `${h}:00 — ${v} órdenes`;
+        elHourBars.appendChild(col);
+      }
+    }
+
+    function renderMarketing() {
+      const clients = getClients();
+      const log = getMessageLog().slice().sort((a, b) => Number(b.ts) - Number(a.ts));
+
+      const elClients = document.getElementById("mktClients");
+      const elMsgs = document.getElementById("mktMsgs");
+      const elLog = document.getElementById("mktLog");
+      const elEmpty = document.getElementById("mktEmpty");
+
+      elClients.textContent = String(clients.length);
+      elMsgs.textContent = String(log.length);
+
+      elLog.innerHTML = "";
+      elEmpty.classList.toggle("hidden", log.length !== 0);
+      for (const m of log.slice(0, 8)) {
+        const pill = m.status === "enviado" ? "bg-emerald-100 text-emerald-900 border-emerald-200" : m.status === "falló" ? "bg-red-100 text-red-900 border-red-200" : "bg-gray-100 text-gray-800 border-gray-200";
+        const row = document.createElement("div");
+        row.className = "flex items-start justify-between gap-3 rounded-xl border border-gray-200 bg-white p-3";
+        row.innerHTML = `
+          <div class="min-w-0">
+            <p class="text-sm font-extrabold truncate">${m.clientName}</p>
+            <p class="text-xs text-gray-600">${m.branch === "tamulte" ? "Tamulté" : "Atasta"} • ${m.template} • ${m.channel.toUpperCase()}</p>
+            <p class="text-[11px] text-gray-500">${new Date(m.ts).toLocaleString("es-MX", { month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</p>
+          </div>
+          <span class="shrink-0 rounded-full border px-2 py-1 text-[11px] font-extrabold ${pill}">${m.status}</span>
+        `;
+        elLog.appendChild(row);
+      }
+    }
+
+    function render() {
+      const now = new Date();
+      elTodayLabel.textContent = now.toLocaleDateString("es-MX", { weekday: "short", year: "numeric", month: "short", day: "numeric" });
+
+      const salesAll = getSales().filter(s => isToday(s.ts));
+      const salesT = salesAll.filter(s => s.branch === "tamulte");
+      const salesA = salesAll.filter(s => s.branch === "atasta");
+
+      elTamsToday.textContent = money(sumTotal(salesT));
+      elAtasToday.textContent = money(sumTotal(salesA));
+
+      const scoped = filterByScope(salesAll);
+      const total = sumTotal(scoped);
+      const orders = countOrders(scoped);
+      const avg = orders ? total / orders : 0;
+      const last = lastSale(scoped);
+
+      elKpiTotal.textContent = money(total);
+      elKpiOrders.textContent = String(orders);
+      elKpiAvg.textContent = money(avg);
+      elKpiLast.textContent = last ? new Date(last.ts).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" }) : "—";
+
+      const top = buildTop(scoped);
+      renderTop(top);
+
+      const hourly = buildHourly(scoped);
+      renderHourly(hourly);
+
+      renderMarketing();
+    }
+
+    document.querySelectorAll(".scopeBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.scope = btn.dataset.scope;
+        localStorage.setItem("ldc_scope", state.scope);
+        setSelected(document.querySelectorAll(".scopeBtn"), b => b.dataset.scope === state.scope);
+        render();
+      });
+    });
+
+    setSelected(document.querySelectorAll(".scopeBtn"), b => b.dataset.scope === state.scope);
+    render();
+  </script>
+</body>
+</html>
