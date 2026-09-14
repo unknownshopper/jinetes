@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventario - Los de Costilla</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" referrerpolicy="no-referrer" />
+  <style>
+    @media print {
+      @page { size: A4; margin: 12mm; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+  <header class="no-print sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 py-3">
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div class="flex items-center gap-3 min-w-0">
+          <img src="tus.png" alt="The Unknown Shopper" class="h-8 w-auto" />
+          <div class="min-w-0">
+            <p class="text-xs text-gray-500 leading-4">Los de Costilla</p>
+            <h1 class="text-sm font-bold truncate">Inventario / Alertas (Demo)</h1>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap justify-end">
+          <a href="comand.html" class="inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50">
+            <i class="fa-solid fa-cash-register"></i>
+            Comandero
+          </a>
+          <a href="ventas.html" class="inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50">
+            <i class="fa-solid fa-chart-line"></i>
+            Ventas
+          </a>
+          <button id="btnSeed" type="button" class="inline-flex items-center gap-2 rounded-full bg-emerald-700 px-3 py-2 text-xs font-extrabold text-white hover:bg-emerald-800 whitespace-nowrap">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            Seed inventario
+          </button>
+          <button id="btnPrint" type="button" class="inline-flex items-center gap-2 rounded-full bg-amber-700 px-3 py-2 text-xs font-bold text-white hover:bg-amber-800 whitespace-nowrap">
+            <i class="fa-solid fa-print"></i>
+            PDF
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-3 grid grid-cols-3 gap-2">
+        <button data-scope="global" type="button" class="scopeBtn rounded-xl border px-3 py-3 text-left">
+          <p class="text-xs text-gray-500">Vista</p>
+          <p class="text-sm font-extrabold">Global</p>
+        </button>
+        <button data-scope="tamulte" type="button" class="scopeBtn rounded-xl border px-3 py-3 text-left">
+          <p class="text-xs text-gray-500">Sucursal</p>
+          <p class="text-sm font-extrabold">Tamulté</p>
+        </button>
+        <button data-scope="atasta" type="button" class="scopeBtn rounded-xl border px-3 py-3 text-left">
+          <p class="text-xs text-gray-500">Sucursal</p>
+          <p class="text-sm font-extrabold">Atasta</p>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <!-- Alertas -->
+    <section class="rounded-2xl border border-gray-200 p-4">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h2 class="text-base font-extrabold">Alertas</h2>
+          <p class="text-xs text-gray-500">Antes de llegar a crítico (por sucursal)</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-gray-600">
+          <span class="inline-flex items-center gap-2 rounded-full bg-amber-50 border border-amber-200 px-3 py-1"><span class="h-2 w-2 rounded-full bg-amber-500"></span> Alerta</span>
+          <span class="inline-flex items-center gap-2 rounded-full bg-red-50 border border-red-200 px-3 py-1"><span class="h-2 w-2 rounded-full bg-red-600"></span> Crítico</span>
+        </div>
+      </div>
+      <div id="alerts" class="mt-4 space-y-2"></div>
+      <p id="alertsEmpty" class="mt-2 text-sm text-gray-600">Sin alertas en este momento.</p>
+    </section>
+
+    <!-- KPIs Inventario -->
+    <section class="grid grid-cols-2 gap-3">
+      <div class="rounded-2xl border border-gray-200 p-4">
+        <p class="text-xs text-gray-500">Ítems monitoreados</p>
+        <p id="kpiItems" class="text-xl font-extrabold mt-1">0</p>
+      </div>
+      <div class="rounded-2xl border border-gray-200 p-4">
+        <p class="text-xs text-gray-500">En alerta / crítico</p>
+        <p id="kpiAlerts" class="text-xl font-extrabold mt-1">0</p>
+      </div>
+    </section>
+
+    <!-- Tabla / lista inventario -->
+    <section class="rounded-2xl border border-gray-200 p-4">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h2 class="text-base font-extrabold">Inventario</h2>
+          <p class="text-xs text-gray-500">Ajuste rápido (+ / −) y mínimos por sucursal</p>
+        </div>
+        <div class="text-xs text-gray-600">
+          <span class="rounded-full bg-gray-100 border border-gray-200 px-3 py-1">Recetas/consumo automático: <span class="font-extrabold">módulo extra</span></span>
+        </div>
+      </div>
+
+      <div id="invList" class="mt-4 space-y-3"></div>
+      <p id="invEmpty" class="mt-2 text-sm text-gray-600">No hay inventario aún. Usa <span class="font-semibold">Seed inventario</span>.</p>
+    </section>
+
+    <!-- Movimientos -->
+    <section class="rounded-2xl border border-gray-200 p-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-extrabold">Movimientos (demo)</h2>
+          <p class="text-xs text-gray-500">Quién ajustó, cuánto y cuándo</p>
+        </div>
+        <button id="btnClearLog" type="button" class="no-print inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50">
+          <i class="fa-solid fa-trash"></i>
+          Limpiar log
+        </button>
+      </div>
+
+      <div id="log" class="mt-4 space-y-2"></div>
+      <p id="logEmpty" class="mt-2 text-sm text-gray-600">Sin movimientos.</p>
+    </section>
+
+    <!-- Marketing placeholder -->
+    <section class="rounded-2xl border border-gray-200 p-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-extrabold">Marketing (módulo)</h2>
+          <p class="text-xs text-gray-500">Clientes + campañas + cupones</p>
+        </div>
+        <span class="rounded-full bg-amber-100 border border-amber-200 px-3 py-1 text-xs font-extrabold text-amber-900">Extra</span>
+      </div>
+      <p class="mt-3 text-sm text-gray-700">Con inventario + ventas, el módulo de marketing puede disparar campañas (WhatsApp) por productos preferidos y frecuencia.</p>
+    </section>
+
+    <footer class="text-center text-xs text-gray-500 py-8">
+      <p>Demo local (HTML/JS). En producción: roles, alertas push/WhatsApp API, recetas y consumo automático.</p>
+    </footer>
+  </main>
+
+  <script>
+    const state = {
+      scope: localStorage.getItem("ldc_inv_scope") || "global"
+    };
+
+    const DEFAULT_ITEMS = [
+      { id: "costilla", name: "Costilla", unit: "kg", step: 0.5, min: 10, warn: 14 },
+      { id: "tortillas", name: "Tortillas", unit: "paq", step: 1, min: 4, warn: 6 },
+      { id: "bolillos", name: "Bolillos", unit: "pz", step: 5, min: 20, warn: 35 },
+      { id: "coca_600", name: "Coca 600 ml", unit: "pz", step: 1, min: 12, warn: 18 },
+      { id: "coca_cristal", name: "Coca cristal", unit: "pz", step: 1, min: 10, warn: 15 },
+      { id: "cafe", name: "Café", unit: "pz", step: 1, min: 8, warn: 12 },
+      { id: "agua", name: "Aguas (Jamaica/Horchata/Matali)", unit: "lt", step: 1, min: 10, warn: 14 }
+    ];
+
+    function setSelected(btns, predicate) {
+      btns.forEach(b => {
+        const on = predicate(b);
+        b.classList.toggle("border-amber-400", on);
+        b.classList.toggle("bg-amber-50", on);
+        b.classList.toggle("border-gray-200", !on);
+      });
+    }
+
+    function getInvStore() {
+      try {
+        const raw = localStorage.getItem("ldc_inventory");
+        const obj = raw ? JSON.parse(raw) : {};
+        return obj && typeof obj === "object" ? obj : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function setInvStore(store) {
+      localStorage.setItem("ldc_inventory", JSON.stringify(store));
+    }
+
+    function getLog() {
+      try {
+        const raw = localStorage.getItem("ldc_inv_log");
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function setLog(log) {
+      localStorage.setItem("ldc_inv_log", JSON.stringify(log.slice(-500)));
+    }
+
+    function getBranchLabel(b) {
+      return b === "tamulte" ? "Tamulté" : "Atasta";
+    }
+
+    function seed() {
+      const ok = confirm("Generar inventario demo (solo en este navegador). ¿Continuar?");
+      if (!ok) return;
+
+      const store = getInvStore();
+      for (const branch of ["tamulte", "atasta"]) {
+        store[branch] = DEFAULT_ITEMS.map(it => {
+          const jitter = (Math.random() - 0.5) * (it.warn - it.min);
+          const base = it.warn + jitter;
+          const cur = Math.max(0, Math.round((base + (Math.random() * 4)) * 10) / 10);
+          return { ...it, cur };
+        });
+      }
+      setInvStore(store);
+
+      const log = getLog();
+      log.push({ ts: Date.now(), branch: "tamulte", item: "costilla", delta: -2, note: "Ajuste demo" });
+      log.push({ ts: Date.now() - 3600 * 1000, branch: "atasta", item: "tortillas", delta: +3, note: "Entrada demo" });
+      setLog(log);
+    }
+
+    function getItemsForScope() {
+      const store = getInvStore();
+      const t = store.tamulte || [];
+      const a = store.atasta || [];
+
+      if (state.scope === "tamulte") return { items: t, branches: ["tamulte"] };
+      if (state.scope === "atasta") return { items: a, branches: ["atasta"] };
+
+      // global: merge by id (sum cur), keep thresholds from default
+      const byId = new Map();
+      for (const src of [t, a]) {
+        for (const it of src) {
+          const cur = byId.get(it.id) || { ...it, cur: 0 };
+          cur.cur = Number(cur.cur || 0) + Number(it.cur || 0);
+          byId.set(it.id, cur);
+        }
+      }
+
+      // ensure defaults exist
+      for (const def of DEFAULT_ITEMS) {
+        if (!byId.has(def.id)) byId.set(def.id, { ...def, cur: 0 });
+      }
+
+      return { items: [...byId.values()], branches: ["tamulte", "atasta"] };
+    }
+
+    function statusFor(item) {
+      const cur = Number(item.cur || 0);
+      const min = Number(item.min || 0);
+      const warn = Number(item.warn || 0);
+      if (cur <= min) return "critical";
+      if (cur <= warn) return "warn";
+      return "ok";
+    }
+
+    function clamp(n) {
+      const x = Number(n);
+      return Number.isFinite(x) ? x : 0;
+    }
+
+    function roundByStep(value, step) {
+      const s = Number(step || 1);
+      if (!Number.isFinite(s) || s <= 0) return value;
+      const k = Math.round(value / s);
+      return Math.round((k * s) * 10) / 10;
+    }
+
+    function adjust(branch, id, delta, note) {
+      const store = getInvStore();
+      store[branch] = store[branch] || DEFAULT_ITEMS.map(x => ({ ...x, cur: 0 }));
+
+      const idx = store[branch].findIndex(x => x.id === id);
+      if (idx === -1) return;
+
+      const it = store[branch][idx];
+      const next = Math.max(0, roundByStep(clamp(it.cur) + delta, it.step));
+      store[branch][idx] = { ...it, cur: next };
+      setInvStore(store);
+
+      const log = getLog();
+      log.push({ ts: Date.now(), branch, item: id, delta, note: note || "Ajuste" });
+      setLog(log);
+
+      render();
+    }
+
+    function setValue(branch, id, nextVal) {
+      const store = getInvStore();
+      store[branch] = store[branch] || DEFAULT_ITEMS.map(x => ({ ...x, cur: 0 }));
+      const idx = store[branch].findIndex(x => x.id === id);
+      if (idx === -1) return;
+
+      const it = store[branch][idx];
+      const next = Math.max(0, roundByStep(clamp(nextVal), it.step));
+      store[branch][idx] = { ...it, cur: next };
+      setInvStore(store);
+
+      const log = getLog();
+      log.push({ ts: Date.now(), branch, item: id, delta: 0, note: "Set manual" });
+      setLog(log);
+      render();
+    }
+
+    function buildAlerts(scopeItems) {
+      const items = scopeItems.items;
+      const alerts = items
+        .map(it => ({ ...it, status: statusFor(it) }))
+        .filter(it => it.status !== "ok")
+        .sort((a, b) => (a.status === b.status ? (a.cur - b.cur) : (a.status === "critical" ? -1 : 1)));
+
+      const el = document.getElementById("alerts");
+      const empty = document.getElementById("alertsEmpty");
+      el.innerHTML = "";
+      empty.classList.toggle("hidden", alerts.length !== 0);
+
+      for (const a of alerts.slice(0, 8)) {
+        const pill = a.status === "critical"
+          ? "bg-red-50 border-red-200 text-red-900"
+          : "bg-amber-50 border-amber-200 text-amber-900";
+
+        const row = document.createElement("div");
+        row.className = "rounded-2xl border border-gray-100 bg-gray-50 p-4";
+        row.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-extrabold truncate">${a.name}</p>
+              <p class="text-xs text-gray-600">Actual: <span class="font-semibold">${a.cur}</span> ${a.unit} • Alerta: ${a.warn} • Crítico: ${a.min}</p>
+            </div>
+            <span class="shrink-0 rounded-full border px-2 py-1 text-[11px] font-extrabold ${pill}">${a.status === "critical" ? "CRÍTICO" : "ALERTA"}</span>
+          </div>
+        `;
+        el.appendChild(row);
+      }
+
+      document.getElementById("kpiItems").textContent = String(items.length);
+      document.getElementById("kpiAlerts").textContent = String(alerts.length);
+    }
+
+    function renderInventoryList() {
+      const store = getInvStore();
+      const el = document.getElementById("invList");
+      const empty = document.getElementById("invEmpty");
+      el.innerHTML = "";
+
+      const hasAny = Boolean((store.tamulte && store.tamulte.length) || (store.atasta && store.atasta.length));
+      empty.classList.toggle("hidden", hasAny);
+
+      const branches = state.scope === "global" ? ["tamulte", "atasta"] : [state.scope];
+
+      for (const branch of branches) {
+        const items = (store[branch] || []).length ? store[branch] : DEFAULT_ITEMS.map(x => ({ ...x, cur: 0 }));
+
+        const block = document.createElement("div");
+        block.className = "rounded-2xl border border-gray-100 bg-gray-50 p-4";
+        block.innerHTML = `
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-extrabold">${getBranchLabel(branch)}</p>
+            <p class="text-xs text-gray-500">Ajuste rápido</p>
+          </div>
+          <div class="mt-3 space-y-2" id="block_${branch}"></div>
+        `;
+        el.appendChild(block);
+
+        const inner = block.querySelector(`#block_${branch}`);
+
+        for (const it of items) {
+          const st = statusFor(it);
+          const badge = st === "critical" ? "bg-red-100 text-red-900 border-red-200" : st === "warn" ? "bg-amber-100 text-amber-900 border-amber-200" : "bg-emerald-100 text-emerald-900 border-emerald-200";
+
+          const row = document.createElement("div");
+          row.className = "rounded-xl border border-gray-200 bg-white p-3";
+          row.innerHTML = `
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-sm font-extrabold truncate">${it.name}</p>
+                <p class="text-[11px] text-gray-500">Min: ${it.min} • Alerta: ${it.warn} • Paso: ${it.step} ${it.unit}</p>
+              </div>
+              <span class="shrink-0 rounded-full border px-2 py-1 text-[11px] font-extrabold ${badge}">${st === "ok" ? "OK" : (st === "warn" ? "ALERTA" : "CRÍTICO")}</span>
+            </div>
+
+            <div class="mt-3 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <button type="button" class="h-9 w-9 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50" data-act="minus" data-branch="${branch}" data-id="${it.id}">-</button>
+                <div class="w-20 text-center">
+                  <input inputmode="decimal" class="w-full rounded-lg border border-gray-300 px-2 py-2 text-sm font-extrabold text-center" value="${it.cur}" data-act="set" data-branch="${branch}" data-id="${it.id}" />
+                  <p class="mt-1 text-[10px] text-gray-500">${it.unit}</p>
+                </div>
+                <button type="button" class="h-9 w-9 rounded-full bg-gray-900 text-white hover:bg-black" data-act="plus" data-branch="${branch}" data-id="${it.id}">+</button>
+              </div>
+              <button type="button" class="no-print inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50" data-act="note" data-branch="${branch}" data-id="${it.id}">
+                <i class="fa-regular fa-pen-to-square"></i>
+                Nota
+              </button>
+            </div>
+          `;
+          inner.appendChild(row);
+
+          row.querySelectorAll("button[data-act]").forEach(btn => {
+            btn.addEventListener("click", () => {
+              const act = btn.dataset.act;
+              const b = btn.dataset.branch;
+              const id = btn.dataset.id;
+              const item = (getInvStore()[b] || []).find(x => x.id === id) || DEFAULT_ITEMS.find(x => x.id === id);
+              const step = Number(item?.step || 1);
+              if (act === "minus") adjust(b, id, -step, "- rápido");
+              if (act === "plus") adjust(b, id, +step, "+ rápido");
+              if (act === "note") {
+                const note = prompt("Nota (demo):", "");
+                if (note === null) return;
+                adjust(b, id, 0, note.trim() || "Nota");
+              }
+            });
+          });
+
+          row.querySelectorAll("input[data-act='set']").forEach(inp => {
+            inp.addEventListener("change", () => {
+              const b = inp.dataset.branch;
+              const id = inp.dataset.id;
+              setValue(b, id, inp.value);
+            });
+          });
+        }
+      }
+    }
+
+    function renderLog() {
+      const log = getLog().slice().sort((a, b) => Number(b.ts) - Number(a.ts));
+      const el = document.getElementById("log");
+      const empty = document.getElementById("logEmpty");
+      el.innerHTML = "";
+      empty.classList.toggle("hidden", log.length !== 0);
+
+      for (const m of log.slice(0, 12)) {
+        const row = document.createElement("div");
+        row.className = "rounded-xl border border-gray-200 bg-white p-3";
+        row.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-extrabold truncate">${getBranchLabel(m.branch)} • ${m.item}</p>
+              <p class="text-xs text-gray-600">${m.note || "Ajuste"}</p>
+              <p class="text-[11px] text-gray-500">${new Date(m.ts).toLocaleString("es-MX", { month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</p>
+            </div>
+            <span class="shrink-0 rounded-full border px-2 py-1 text-[11px] font-extrabold bg-gray-100 border-gray-200 text-gray-800">${m.delta > 0 ? "+" + m.delta : String(m.delta)}</span>
+          </div>
+        `;
+        el.appendChild(row);
+      }
+    }
+
+    function render() {
+      const scopeItems = getItemsForScope();
+      buildAlerts(scopeItems);
+      renderInventoryList();
+      renderLog();
+    }
+
+    document.getElementById("btnPrint").addEventListener("click", () => window.print());
+    document.getElementById("btnSeed").addEventListener("click", () => { seed(); render(); });
+
+    document.getElementById("btnClearLog").addEventListener("click", () => {
+      const ok = confirm("Borrar log de movimientos (demo). ¿Continuar?");
+      if (!ok) return;
+      localStorage.removeItem("ldc_inv_log");
+      render();
+    });
+
+    document.querySelectorAll(".scopeBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.scope = btn.dataset.scope;
+        localStorage.setItem("ldc_inv_scope", state.scope);
+        setSelected(document.querySelectorAll(".scopeBtn"), b => b.dataset.scope === state.scope);
+        render();
+      });
+    });
+
+    setSelected(document.querySelectorAll(".scopeBtn"), b => b.dataset.scope === state.scope);
+    render();
+  </script>
+</body>
+</html>

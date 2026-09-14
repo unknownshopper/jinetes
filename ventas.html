@@ -85,7 +85,7 @@
     <!-- Dashboard Don Miguel (status de venta) -->
     <section class="rounded-2xl border border-gray-200 bg-slate-950 text-white p-5 shadow-sm">
       <div class="flex items-center justify-between">
-        <p class="text-xs font-extrabold tracking-widest text-amber-400">DASHBOARD DON MIGUEL</p>
+        <p class="text-xs font-extrabold tracking-widest text-amber-400">DASHBOARD VENTAS</p>
         <p id="todayLabel" class="text-xs text-slate-300"></p>
       </div>
 
@@ -93,7 +93,7 @@
         <div class="rounded-xl bg-slate-900/70 border border-slate-800 px-4 py-3 flex items-center justify-between">
           <div class="flex items-center gap-2 text-sm font-semibold">
             <span class="text-slate-300">📍</span>
-            <span class="text-slate-200">Tams. Hoy:</span>
+            <span class="text-slate-200">Tamulté. Hoy:</span>
           </div>
           <div class="text-sm font-extrabold text-emerald-400" id="tamsToday">$0</div>
         </div>
@@ -101,7 +101,7 @@
         <div class="rounded-xl bg-slate-900/70 border border-slate-800 px-4 py-3 flex items-center justify-between">
           <div class="flex items-center gap-2 text-sm font-semibold">
             <span class="text-slate-300">📍</span>
-            <span class="text-slate-200">Atas. Hoy:</span>
+            <span class="text-slate-200">Atasta. Hoy:</span>
           </div>
           <div class="text-sm font-extrabold text-emerald-400" id="atasToday">$0</div>
         </div>
@@ -111,6 +111,7 @@
             <span class="text-slate-300">🐷</span>
             <span class="text-slate-200">Costilla Total:</span>
           </div>
+          
           <div class="flex items-center gap-2">
             <span class="text-[11px] text-slate-400">(módulo extra)</span>
             <span class="rounded-full bg-red-900/40 border border-red-900 px-2 py-1 text-[11px] font-extrabold text-red-200">—</span>
@@ -141,21 +142,21 @@
 
     <!-- Top vendidos -->
     <section class="rounded-2xl border border-gray-200 p-4">
-      <div class="flex items-center justify-between gap-3">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
         <div>
           <h2 class="text-base font-extrabold">Top vendidos (hoy)</h2>
           <p class="text-xs text-gray-500">Barras por unidades vendidas (scope)</p>
         </div>
-        <div class="flex items-center gap-2">
-          <button id="btnSeedDay" type="button" class="no-print inline-flex items-center gap-2 rounded-full bg-emerald-700 px-3 py-2 text-xs font-extrabold text-white hover:bg-emerald-800">
+        <div class="flex flex-wrap items-center gap-2 justify-end">
+          <button id="btnSeedDay" type="button" class="no-print inline-flex items-center gap-2 rounded-full bg-emerald-700 px-3 py-2 text-xs font-extrabold text-white hover:bg-emerald-800 whitespace-nowrap">
             <i class="fa-solid fa-wand-magic-sparkles"></i>
             Generar día demo
           </button>
-          <button id="btnSeedBurst" type="button" class="no-print inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-2 text-xs font-extrabold text-emerald-900 hover:bg-emerald-100">
+          <button id="btnSeedBurst" type="button" class="no-print inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-2 text-xs font-extrabold text-emerald-900 hover:bg-emerald-100 whitespace-nowrap">
             <i class="fa-solid fa-bolt"></i>
             +10 ventas
           </button>
-          <button id="btnSeedMkt" type="button" class="no-print inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-200 px-3 py-2 text-xs font-extrabold text-blue-900 hover:bg-blue-100">
+          <button id="btnSeedMkt" type="button" class="no-print inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-200 px-3 py-2 text-xs font-extrabold text-blue-900 hover:bg-blue-100 whitespace-nowrap">
             <i class="fa-solid fa-bullhorn"></i>
             Seed marketing
           </button>
@@ -269,9 +270,11 @@
 
     const btnClear = document.getElementById("btnClear");
     btnClear.addEventListener("click", () => {
-      const ok = confirm("Esto borra ventas guardadas en este navegador (solo demo). ¿Continuar?");
+      const ok = confirm("Esto borra datos demo en este navegador (ventas + clientes + mensajes). ¿Continuar?");
       if (!ok) return;
       localStorage.removeItem("ldc_sales");
+      localStorage.removeItem("ldc_clients");
+      localStorage.removeItem("ldc_message_log");
       render();
     });
 

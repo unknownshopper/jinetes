@@ -8,10 +8,22 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" referrerpolicy="no-referrer" />
   <style>
     @media print {
-      @page { size: 80mm auto; margin: 6mm; }
+      @page { size: A4; margin: 12mm; }
+
       body { background: #fff !important; }
+
+      /* Imprimir SOLO la nota */
+      body * { visibility: hidden !important; }
+      .print-only, .print-only * { visibility: visible !important; }
+      .print-only {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+
       .no-print { display: none !important; }
-      .print-only { display: block !important; }
       .print-block { break-inside: avoid; page-break-inside: avoid; }
     }
     .print-only { display: none; }
@@ -47,7 +59,7 @@
 </head>
 <body class="bg-white text-gray-900 antialiased">
   <!-- Sticky header / controls -->
-  <header class="no-print sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+  <header class="no-print lg:sticky lg:top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
     <div class="max-w-6xl mx-auto px-4 py-3">
       <div class="flex items-center justify-between gap-3 flex-wrap">
         <div class="flex items-center gap-3 min-w-0">
@@ -124,9 +136,16 @@
               </div>
             </div>
 
-            <div class="rounded-xl overflow-hidden border border-gray-200">
-              <iframe id="mapFrame" title="Mapa" class="w-full h-48" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            <div class="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+              <iframe id="mapFrame" title="Mapa" class="w-full h-48 pointer-events-none" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
                 src="https://www.google.com/maps?q=Tabasco&output=embed"></iframe>
+            </div>
+            <div class="mt-2 flex items-center justify-between gap-2">
+              <p class="text-[11px] text-gray-500">En móvil, el mapa se desactiva para no bloquear el scroll.</p>
+              <a id="openMaps" href="https://www.google.com/maps?q=Tabasco" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 text-[11px] font-extrabold text-gray-700 hover:bg-gray-50">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                Abrir en Maps
+              </a>
             </div>
           </div>
         </div>
@@ -226,21 +245,36 @@
     <!-- Receipt (print) -->
     <section class="print-only mt-6">
       <div class="print-block">
-        <div class="flex items-center justify-between">
+        <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="text-sm font-extrabold">Los de Costilla</p>
-            <p class="text-xs text-gray-600">Nota de consumo</p>
+            <p class="text-base font-extrabold">Los de Costilla</p>
+            <p id="rBranch" class="text-xs text-gray-700 font-semibold"></p>
+            <p id="rBranchAddr" class="text-[11px] text-gray-600"></p>
           </div>
           <div class="text-right">
+            <p class="text-xs text-gray-500">Nota de consumo</p>
             <p id="rFolio" class="text-xs font-semibold"></p>
             <p id="rDate" class="text-[11px] text-gray-600"></p>
           </div>
         </div>
-        <div class="mt-2 text-[11px] text-gray-600">
-          <p><span class="font-semibold">Tipo:</span> <span id="rType"></span></p>
-          <p><span class="font-semibold">Pago:</span> <span id="rPay"></span></p>
-          <p id="rDelivery" class="hidden"><span class="font-semibold">Dirección:</span> <span id="rAddr"></span></p>
-          <p id="rPlatform" class="hidden"><span class="font-semibold">Plataforma:</span> <span id="rPlat"></span></p>
+
+        <div class="mt-3 rounded-xl border border-gray-200 bg-gray-50 p-3 text-[11px] text-gray-700">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <p class="font-semibold text-gray-800">Datos fiscales</p>
+              <p><span class="font-semibold">RFC:</span> <span id="rRfc">POR DEFINIR</span></p>
+              <p><span class="font-semibold">Razón social:</span> <span id="rRazon">POR DEFINIR</span></p>
+            </div>
+            <div>
+              <p class="font-semibold text-gray-800">Pedido</p>
+              <p><span class="font-semibold">Tipo:</span> <span id="rType"></span></p>
+              <p><span class="font-semibold">Pago:</span> <span id="rPay"></span></p>
+            </div>
+          </div>
+          <div class="mt-2">
+            <p id="rDelivery" class="hidden"><span class="font-semibold">Entrega:</span> <span id="rAddr"></span></p>
+            <p id="rPlatform" class="hidden"><span class="font-semibold">Plataforma:</span> <span id="rPlat"></span></p>
+          </div>
         </div>
 
         <div class="mt-3 border-t border-gray-200 pt-2">
@@ -533,6 +567,8 @@
         if (!q) return;
         const url = `https://www.google.com/maps?q=${encodeURIComponent(q)}&output=embed`;
         mapFrame.src = url;
+        const a = document.getElementById("openMaps");
+        if (a) a.href = `https://www.google.com/maps?q=${encodeURIComponent(q)}`;
       }, 300);
     }
 
@@ -567,7 +603,11 @@
       const now = new Date();
       document.getElementById("rFolio").textContent = finalFolio;
       document.getElementById("rDate").textContent = now.toLocaleString("es-MX");
-      document.getElementById("rType").textContent = `${getBranchLabel()} — ${getTypeLabel()}`;
+
+      document.getElementById("rBranch").textContent = `Sucursal ${getBranchLabel()}`;
+      document.getElementById("rBranchAddr").textContent = getBranchAddr();
+
+      document.getElementById("rType").textContent = getTypeLabel();
       document.getElementById("rPay").textContent = getPayLabel();
 
       const rDelivery = document.getElementById("rDelivery");
@@ -634,8 +674,23 @@
       renderSummary();
     }
 
+    const BRANCH = {
+      tamulte: {
+        label: "Tamulté",
+        addr: "Calle Libertad esquina con Calle Gregorio Méndez Magaña"
+      },
+      atasta: {
+        label: "Atasta",
+        addr: "Calle Melchor Ocampo Esq. con José María Morelos y Pavón"
+      }
+    };
+
     function getBranchLabel() {
-      return state.branch === "tamulte" ? "Tamulté" : "Atasta";
+      return BRANCH[state.branch]?.label || (state.branch === "tamulte" ? "Tamulté" : "Atasta");
+    }
+
+    function getBranchAddr() {
+      return BRANCH[state.branch]?.addr || "";
     }
 
     // Init controls
