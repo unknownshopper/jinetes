@@ -280,7 +280,20 @@
     }
 
     function setSales(sales) {
-      const capped = sales.slice(-1000);
+      const caps = [1000, 600, 400, 250, 150, 80];
+      for (const cap of caps) {
+        try {
+          const capped = sales.slice(-cap);
+          localStorage.setItem("ldc_sales", JSON.stringify(capped));
+          return;
+        } catch (e) {
+          if (!(e && e.name === "QuotaExceededError")) throw e;
+        }
+      }
+
+      // Último recurso: limpiar y guardar una muestra pequeña
+      localStorage.removeItem("ldc_sales");
+      const capped = sales.slice(-80);
       localStorage.setItem("ldc_sales", JSON.stringify(capped));
     }
 
@@ -382,9 +395,13 @@
       const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 7, 0, 0, 0).getTime();
       const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 22, 0, 0, 0).getTime();
 
-      const sales = getSales().filter(s => !isToday(s.ts));
+      // Para que siempre funcione aunque el navegador tenga poco espacio,
+      // el día demo sobreescribe las ventas de HOY en lugar de acumular histórico.
+      const sales = [];
 
       const totalSales = 85 + Math.floor(Math.random() * 55);
+      // si tu navegador tiene poco espacio, baja esto
+
 
       // Garantizar ventas en ambas sucursales para que el demo se vea al cambiar scope
       const minPerBranch = 12;
@@ -601,9 +618,17 @@
         const v = bars[h];
         const height = Math.round((v / max) * 100);
         const col = document.createElement("div");
-        col.className = "rounded-md bg-gray-100 border border-gray-200";
+        col.className = "rounded-md border border-gray-200";
         col.style.height = `${Math.max(8, height)}px`;
         col.title = `${h}:00 — ${v} órdenes`;
+
+        if (v > 0) {
+          const alpha = 0.15 + (v / max) * 0.85;
+          col.style.backgroundColor = `rgba(180, 83, 9, ${alpha.toFixed(3)})`; // similar a bg-amber-700
+        } else {
+          col.style.backgroundColor = "#f3f4f6"; // gray-100
+        }
+
         elHourBars.appendChild(col);
       }
     }

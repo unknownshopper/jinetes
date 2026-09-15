@@ -353,7 +353,7 @@
     const MENU = {
       foods: [
         {
-          title: "Tacos de guisado ($23)",
+          title: "Tacos de guisado",
           items: [
             { id: "taco_despeinada", name: "Taco de Despeinada", price: 23 },
             { id: "taco_cochinita", name: "Taco de Cochinita", price: 23 },
@@ -378,8 +378,8 @@
         {
           title: "Consomé",
           items: [
-            { id: "consome", name: "Consomé de costilla", price: 90 },
-            { id: "consome_llevar", name: "Consomé para llevar", price: 100 }
+            { id: "consome", name: "De costilla", price: 90 },
+            { id: "consome_llevar", name: "Para llevar", price: 100 }
           ]
         }
       ],
@@ -580,7 +580,10 @@
 
       const left = document.createElement("div");
       left.className = "min-w-0";
-      left.innerHTML = `<p class="text-sm font-bold truncate">${item.name}</p><p class="text-xs text-gray-500">${money(item.price)}</p>`;
+      const isTaco = item.id?.startsWith("taco_");
+      const isTorta = item.id?.startsWith("torta_");
+      const displayName = (isTaco ? String(item.name || "").replace(/^Taco de\s+/i, "") : (isTorta ? String(item.name || "").replace(/^Torta de\s+/i, "") : item.name));
+      left.innerHTML = `<p class="text-sm font-bold truncate">${displayName}</p><p class="text-xs text-gray-500">${money(item.price)}</p>`;
 
       const right = document.createElement("div");
       right.className = "flex items-center gap-2";
