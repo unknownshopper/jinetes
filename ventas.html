@@ -89,34 +89,14 @@
         <p id="todayLabel" class="text-xs text-slate-300"></p>
       </div>
 
-      <div class="mt-4 space-y-2">
-        <div class="rounded-xl bg-slate-900/70 border border-slate-800 px-4 py-3 flex items-center justify-between">
-          <div class="flex items-center gap-2 text-sm font-semibold">
-            <span class="text-slate-300">📍</span>
-            <span class="text-slate-200">Tamulté. Hoy:</span>
-          </div>
-          <div class="text-sm font-extrabold text-emerald-400" id="tamsToday">$0</div>
-        </div>
+      <div class="mt-4 space-y-2" id="salesStatusRows"></div>
 
-        <div class="rounded-xl bg-slate-900/70 border border-slate-800 px-4 py-3 flex items-center justify-between">
-          <div class="flex items-center gap-2 text-sm font-semibold">
-            <span class="text-slate-300">📍</span>
-            <span class="text-slate-200">Atasta. Hoy:</span>
-          </div>
-          <div class="text-sm font-extrabold text-emerald-400" id="atasToday">$0</div>
+      <div class="mt-4 rounded-xl bg-slate-900/70 border border-slate-800 px-4 py-3">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-extrabold tracking-widest text-slate-200">UNIDADES (HOY)</p>
+          <p class="text-[11px] text-slate-400">según menú</p>
         </div>
-
-        <div class="rounded-xl bg-slate-900/70 border border-slate-800 px-4 py-3 flex items-center justify-between">
-          <div class="flex items-center gap-2 text-sm font-semibold">
-            <span class="text-slate-300">🐷</span>
-            <span class="text-slate-200">Costilla Total:</span>
-          </div>
-          
-          <div class="flex items-center gap-2">
-            <span class="text-[11px] text-slate-400">(módulo extra)</span>
-            <span class="rounded-full bg-red-900/40 border border-red-900 px-2 py-1 text-[11px] font-extrabold text-red-200">—</span>
-          </div>
-        </div>
+        <div id="catUnits" class="mt-3 grid grid-cols-2 gap-2"></div>
       </div>
     </section>
 
@@ -240,8 +220,8 @@
     };
 
     const elTodayLabel = document.getElementById("todayLabel");
-    const elTamsToday = document.getElementById("tamsToday");
-    const elAtasToday = document.getElementById("atasToday");
+    const elSalesStatusRows = document.getElementById("salesStatusRows");
+    const elCatUnits = document.getElementById("catUnits");
     const elKpiTotal = document.getElementById("kpiTotal");
     const elKpiOrders = document.getElementById("kpiOrders");
     const elKpiAvg = document.getElementById("kpiAvg");
@@ -405,6 +385,16 @@
       const sales = getSales().filter(s => !isToday(s.ts));
 
       const totalSales = 85 + Math.floor(Math.random() * 55);
+
+      // Garantizar ventas en ambas sucursales para que el demo se vea al cambiar scope
+      const minPerBranch = 12;
+      for (let i = 0; i < minPerBranch; i++) {
+        const t1 = start + Math.floor(Math.random() * (end - start));
+        const t2 = start + Math.floor(Math.random() * (end - start));
+        sales.push(genSale(t1, "tamulte"));
+        sales.push(genSale(t2, "atasta"));
+      }
+
       for (let i = 0; i < totalSales; i++) {
         const t = start + Math.floor(Math.random() * (end - start));
         const hour = new Date(t).getHours();
@@ -469,6 +459,81 @@
 
     function sumTotal(sales) {
       return sales.reduce((sum, s) => sum + Number(s.total || 0), 0);
+    }
+
+    function sumUnits(sales) {
+      let n = 0;
+      for (const s of sales) for (const l of (s.lines || [])) n += Number(l.q || 0);
+      return n;
+    }
+
+    function catForProductId(id) {
+      const x = String(id || "");
+      if (x.startsWith("taco_")) return "tacos";
+      if (x.startsWith("torta_")) return "tortas";
+      if (x.startsWith("consome")) return "consome";
+      return "bebidas";
+    }
+
+    function unitsByCategory(sales) {
+      const u = { tacos: 0, tortas: 0, consome: 0, bebidas: 0 };
+      for (const s of sales) {
+        for (const l of (s.lines || [])) {
+          const c = catForProductId(l.id);
+          u[c] += Number(l.q || 0);
+        }
+      }
+      return u;
+    }
+
+    function renderStatusRows({ scope, salesT, salesA }) {
+      elSalesStatusRows.innerHTML = "";
+
+      const row = (label, value) => {
+        const div = document.createElement("div");
+        div.className = "rounded-xl bg-slate-900/70 border border-slate-800 px-4 py-3 flex items-center justify-between";
+        div.innerHTML = `
+          <div class="flex items-center gap-2 text-sm font-semibold">
+            <span class="text-slate-300">📍</span>
+            <span class="text-slate-200">${label}</span>
+          </div>
+          <div class="text-sm font-extrabold text-emerald-400">${value}</div>
+        `;
+        return div;
+      };
+
+      if (scope === "global") {
+        elSalesStatusRows.appendChild(row("Tamulté. Hoy:", money(sumTotal(salesT))));
+        elSalesStatusRows.appendChild(row("Atasta. Hoy:", money(sumTotal(salesA))));
+      } else if (scope === "tamulte") {
+        elSalesStatusRows.appendChild(row("Tamulté. Hoy:", money(sumTotal(salesT))));
+      } else {
+        elSalesStatusRows.appendChild(row("Atasta. Hoy:", money(sumTotal(salesA))));
+      }
+    }
+
+    function renderCatUnits(u) {
+      const cards = [
+        { id: "tacos", label: "Tacos", emoji: "🌮" },
+        { id: "tortas", label: "Tortas", emoji: "🥪" },
+        { id: "consome", label: "Consomé", emoji: "🍲" },
+        { id: "bebidas", label: "Bebidas", emoji: "🥤" }
+      ];
+
+      elCatUnits.innerHTML = "";
+      for (const c of cards) {
+        const v = Number(u[c.id] || 0);
+        const div = document.createElement("div");
+        div.className = "rounded-xl bg-slate-950/30 border border-slate-800 px-3 py-2 flex items-center justify-between";
+        div.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="text-base">${c.emoji}</span>
+            <span class="text-xs font-extrabold text-slate-200">${c.label}</span>
+          </div>
+          <span class="text-sm font-extrabold text-white">${v}</span>
+        `;
+        elCatUnits.appendChild(div);
+      }
     }
 
     function countOrders(sales) {
@@ -581,10 +646,10 @@
       const salesT = salesAll.filter(s => s.branch === "tamulte");
       const salesA = salesAll.filter(s => s.branch === "atasta");
 
-      elTamsToday.textContent = money(sumTotal(salesT));
-      elAtasToday.textContent = money(sumTotal(salesA));
+      renderStatusRows({ scope: state.scope, salesT, salesA });
 
       const scoped = filterByScope(salesAll);
+      renderCatUnits(unitsByCategory(scoped));
       const total = sumTotal(scoped);
       const orders = countOrders(scoped);
       const avg = orders ? total / orders : 0;

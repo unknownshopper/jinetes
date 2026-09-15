@@ -7,6 +7,13 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" referrerpolicy="no-referrer" />
   <style>
+    body.icon-mode .mode-text { display: none; }
+    body.icon-mode .mode-icon { display: flex !important; }
+
+    /* Mostrar solo el botón de cambio (uno a la vez) */
+    body.icon-mode #viewIcons { display: none; }
+    body:not(.icon-mode) #viewText { display: none; }
+
     @media print {
       @page { size: A4; margin: 12mm; }
 
@@ -70,6 +77,16 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
+          <button id="viewText" type="button" class="no-print inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 text-xs font-extrabold text-gray-700 hover:bg-gray-50" title="Cambiar a vista con texto">
+            <i class="fa-solid fa-align-left"></i>
+            Texto
+          </button>
+          <button id="viewIcons" type="button" class="no-print inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 text-xs font-extrabold text-gray-700 hover:bg-gray-50" title="Cambiar a vista con íconos">
+            <i class="fa-solid fa-icons"></i>
+            Íconos
+          </button>
+        </div>
+        <div class="flex items-center gap-2">
           <button data-branch="tamulte" type="button" class="branchBtn rounded-full border border-gray-300 px-3 py-2 text-xs font-extrabold text-gray-700">Tamulté</button>
           <button data-branch="atasta" type="button" class="branchBtn rounded-full border border-gray-300 px-3 py-2 text-xs font-extrabold text-gray-700">Atasta</button>
         </div>
@@ -87,18 +104,42 @@
 
       <!-- Order type -->
       <div class="mt-3 grid grid-cols-3 gap-2">
-        <button data-order-type="aqui" type="button" class="orderTypeBtn rounded-xl border px-3 py-3 text-left">
-          <p class="text-xs text-gray-500">1</p>
-          <p class="text-sm font-bold">Para comer aquí</p>
+        <button data-order-type="aqui" type="button" class="orderTypeBtn rounded-xl border px-3 py-3 text-left" aria-label="Para comer aquí" title="Para comer aquí">
+          <div class="mode-text">
+            <p class="text-xs text-gray-500">1</p>
+            <p class="text-sm font-bold">Para comer aquí</p>
+          </div>
+          <div class="mode-icon hidden flex items-center justify-center py-2">
+            <i class="fa-solid fa-utensils text-2xl"></i>
+          </div>
         </button>
-        <button data-order-type="llevar" type="button" class="orderTypeBtn rounded-xl border px-3 py-3 text-left">
-          <p class="text-xs text-gray-500">2</p>
-          <p class="text-sm font-bold">Para llevar</p>
+        <button data-order-type="llevar" type="button" class="orderTypeBtn rounded-xl border px-3 py-3 text-left" aria-label="Para llevar" title="Para llevar">
+          <div class="mode-text">
+            <p class="text-xs text-gray-500">2</p>
+            <p class="text-sm font-bold">Para llevar</p>
+          </div>
+          <div class="mode-icon hidden flex items-center justify-center py-2">
+            <i class="fa-solid fa-bag-shopping text-2xl"></i>
+          </div>
         </button>
-        <button data-order-type="domicilio" type="button" class="orderTypeBtn rounded-xl border px-3 py-3 text-left">
-          <p class="text-xs text-gray-500">3</p>
-          <p class="text-sm font-bold">A domicilio</p>
+        <button data-order-type="domicilio" type="button" class="orderTypeBtn rounded-xl border px-3 py-3 text-left" aria-label="A domicilio" title="A domicilio">
+          <div class="mode-text">
+            <p class="text-xs text-gray-500">3</p>
+            <p class="text-sm font-bold">A domicilio</p>
+          </div>
+          <div class="mode-icon hidden flex items-center justify-center py-2">
+            <i class="fa-solid fa-motorcycle text-2xl"></i>
+          </div>
         </button>
+      </div>
+
+      <!-- Nombre (requerido para llevar / domicilio; no requerido para plataforma) -->
+      <div id="nameBlock" class="mt-3 hidden">
+        <div class="rounded-2xl border border-gray-200 p-4">
+          <label class="text-xs font-semibold text-gray-700">Nombre del cliente</label>
+          <input id="nameInput" type="text" placeholder="Ej. Juan / Sra. López" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-200" />
+          <p class="mt-1 text-[11px] text-gray-500">Requerido para <strong>para llevar</strong> y <strong>a domicilio</strong>.</p>
+        </div>
       </div>
 
       <!-- Delivery + platform details (conditional) -->
@@ -113,7 +154,7 @@
           </div>
 
           <div class="mt-3 grid gap-3">
-            <div>
+            <div id="addrBlock">
               <label class="text-xs font-semibold text-gray-700">Dirección</label>
               <input id="addressInput" type="text" placeholder="Escribe dirección..." class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-200" />
               <p class="mt-1 text-[11px] text-gray-500">El mapa se actualiza mientras escribes (demo).</p>
@@ -121,8 +162,9 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="text-xs font-semibold text-gray-700">Referencia (opcional)</label>
+                <label id="refLabel" class="text-xs font-semibold text-gray-700">Referencia (opcional)</label>
                 <input id="refInput" type="text" placeholder="Casa azul, portón negro..." class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-200" />
+                <p id="refHelp" class="mt-1 text-[11px] text-gray-500 hidden">Para plataforma, escribe el <strong>folio del pedido</strong> o una referencia corta.</p>
               </div>
               <div id="platformBlock" class="hidden">
                 <label class="text-xs font-semibold text-gray-700">Plataforma + Folio</label>
@@ -158,17 +200,32 @@
           <span class="text-[11px] text-gray-500">(Clip: módulo extra)</span>
         </div>
         <div class="mt-2 grid grid-cols-3 gap-2">
-          <button data-pay="efectivo" type="button" class="payBtn rounded-xl border px-3 py-3 text-left">
-            <p class="text-xs text-gray-500">Pago</p>
-            <p class="text-sm font-bold">Efectivo</p>
+          <button data-pay="efectivo" type="button" class="payBtn rounded-xl border px-3 py-3 text-left" aria-label="Efectivo" title="Efectivo">
+            <div class="mode-text">
+              <p class="text-xs text-gray-500">Pago</p>
+              <p class="text-sm font-bold">Efectivo</p>
+            </div>
+            <div class="mode-icon hidden flex items-center justify-center py-2">
+              <i class="fa-solid fa-money-bill-wave text-2xl"></i>
+            </div>
           </button>
-          <button data-pay="transferencia" type="button" class="payBtn rounded-xl border px-3 py-3 text-left">
-            <p class="text-xs text-gray-500">Pago</p>
-            <p class="text-sm font-bold">Transferencia</p>
+          <button data-pay="transferencia" type="button" class="payBtn rounded-xl border px-3 py-3 text-left" aria-label="Transferencia" title="Transferencia">
+            <div class="mode-text">
+              <p class="text-xs text-gray-500">Pago</p>
+              <p class="text-sm font-bold leading-tight break-words">Transferencia</p>
+            </div>
+            <div class="mode-icon hidden flex items-center justify-center py-2">
+              <i class="fa-solid fa-right-left text-2xl"></i>
+            </div>
           </button>
-          <button type="button" disabled class="rounded-xl border border-dashed px-3 py-3 text-left opacity-60 cursor-not-allowed">
-            <p class="text-xs text-gray-500">Próximamente</p>
-            <p class="text-sm font-bold">Clip</p>
+          <button type="button" disabled class="rounded-xl border border-dashed px-3 py-3 text-left opacity-60 cursor-not-allowed" aria-label="Clip (próximamente)" title="Clip (próximamente)">
+            <div class="mode-text">
+              <p class="text-xs text-gray-500">Próximamente</p>
+              <p class="text-sm font-bold">Clip</p>
+            </div>
+            <div class="mode-icon hidden flex items-center justify-center py-2">
+              <i class="fa-solid fa-credit-card text-2xl"></i>
+            </div>
           </button>
         </div>
       </div>
@@ -272,6 +329,7 @@
             </div>
           </div>
           <div class="mt-2">
+            <p id="rNameRow" class="hidden"><span class="font-semibold">Cliente:</span> <span id="rName"></span></p>
             <p id="rDelivery" class="hidden"><span class="font-semibold">Entrega:</span> <span id="rAddr"></span></p>
             <p id="rPlatform" class="hidden"><span class="font-semibold">Plataforma:</span> <span id="rPlat"></span></p>
           </div>
@@ -339,11 +397,14 @@
       branch: localStorage.getItem("ldc_branch") || "tamulte",
       orderType: "aqui",
       payMethod: "efectivo",
+      customerName: "",
       platformEnabled: false,
       platform: "Didi",
       platformId: "",
       address: "",
       reference: "",
+      openFoodCat: (localStorage.getItem("ldc_openFoodCat") ?? "tacos"),
+      openDrinkCat: (localStorage.getItem("ldc_openDrinkCat") ?? "bebidas"),
       qty: new Map()
     };
 
@@ -355,7 +416,11 @@
     const elOrderTypeLabel = document.getElementById("orderTypeLabel");
     const elPayLabel = document.getElementById("payLabel");
 
+    const nameBlock = document.getElementById("nameBlock");
+    const nameInput = document.getElementById("nameInput");
+
     const deliveryBlock = document.getElementById("deliveryBlock");
+    const addrBlock = document.getElementById("addrBlock");
     const platformToggle = document.getElementById("platformToggle");
     const platformBlock = document.getElementById("platformBlock");
     const platformSelect = document.getElementById("platformSelect");
@@ -433,19 +498,80 @@
       });
     }
 
-    function renderCategory(cat) {
+    function slug(s) {
+      return String(s || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+    }
+
+    function catId(cat) {
+      const t = slug(cat.title);
+      if (t.includes("tacos")) return "tacos";
+      if (t.includes("tortas")) return "tortas";
+      if (t.includes("consome")) return "consome";
+      return t || "cat";
+    }
+
+    function renderAccordionCategory({ ns, id, title, items, openId, onOpen }) {
       const wrap = document.createElement("div");
-      const h = document.createElement("div");
-      h.className = "flex items-center justify-between";
-      h.innerHTML = `<p class="text-sm font-extrabold text-gray-900">${cat.title}</p>`;
-      wrap.appendChild(h);
+      wrap.className = "rounded-2xl border border-gray-200 bg-white";
+      wrap.dataset[`${ns}Cat`] = id;
+
+      const headerBtn = document.createElement("button");
+      headerBtn.type = "button";
+      headerBtn.className = "w-full px-4 py-3 flex items-center justify-between gap-3";
+      headerBtn.setAttribute("aria-expanded", "false");
+      headerBtn.innerHTML = `
+        <div class="min-w-0 text-left">
+          <p class="text-sm font-extrabold text-gray-900 truncate">${title}</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span data-${ns}-badge="${id}" class="hidden rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-[11px] font-extrabold text-amber-900">0</span>
+          <i data-${ns}-chevron="${id}" class="fa-solid fa-chevron-down text-gray-500"></i>
+        </div>
+      `;
+
+      const body = document.createElement("div");
+      body.className = "px-4 pb-4 hidden";
+      body.dataset[`${ns}CatBody`] = id;
 
       const grid = document.createElement("div");
       grid.className = "mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2";
+      for (const item of items) grid.appendChild(renderItemRow(item));
+      body.appendChild(grid);
 
-      for (const item of cat.items) grid.appendChild(renderItemRow(item));
-      wrap.appendChild(grid);
+      headerBtn.addEventListener("click", () => onOpen(id));
+
+      wrap.appendChild(headerBtn);
+      wrap.appendChild(body);
       return wrap;
+    }
+
+    function renderCategory(cat) {
+      const id = catId(cat);
+      return renderAccordionCategory({
+        ns: "food",
+        id,
+        title: cat.title,
+        items: cat.items,
+        openId: state.openFoodCat,
+        onOpen: setOpenFoodCat
+      });
+    }
+
+    function renderDrinkCategory(cat) {
+      const id = cat.id;
+      return renderAccordionCategory({
+        ns: "drink",
+        id,
+        title: cat.title,
+        items: cat.items,
+        openId: state.openDrinkCat,
+        onOpen: setOpenDrinkCat
+      });
     }
 
     function renderItemRow(item) {
@@ -488,15 +614,63 @@
       return row;
     }
 
+    function setOpenFoodCat(id) {
+      const next = (state.openFoodCat === id) ? "" : id;
+      state.openFoodCat = next;
+      localStorage.setItem("ldc_openFoodCat", next);
+
+      document.querySelectorAll("[data-food-cat-body]").forEach(el => {
+        const open = el.dataset.foodCatBody === next;
+        el.classList.toggle("hidden", !open);
+      });
+
+      document.querySelectorAll("[data-food-cat]").forEach(el => {
+        const open = el.dataset.foodCat === next;
+        const btn = el.querySelector("button");
+        if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+
+      document.querySelectorAll("[data-food-chevron]").forEach(ch => {
+        const open = ch.dataset.foodChevron === next;
+        ch.classList.toggle("rotate-180", open);
+      });
+    }
+
+    function setOpenDrinkCat(id) {
+      const next = (state.openDrinkCat === id) ? "" : id;
+      state.openDrinkCat = next;
+      localStorage.setItem("ldc_openDrinkCat", next);
+
+      document.querySelectorAll("[data-drink-cat-body]").forEach(el => {
+        const open = el.dataset.drinkCatBody === next;
+        el.classList.toggle("hidden", !open);
+      });
+
+      document.querySelectorAll("[data-drink-cat]").forEach(el => {
+        const open = el.dataset.drinkCat === next;
+        const btn = el.querySelector("button");
+        if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+
+      document.querySelectorAll("[data-drink-chevron]").forEach(ch => {
+        const open = ch.dataset.drinkChevron === next;
+        ch.classList.toggle("rotate-180", open);
+      });
+    }
+
     function buildMenu() {
       elFoods.innerHTML = "";
       for (const cat of MENU.foods) elFoods.appendChild(renderCategory(cat));
 
       elDrinks.innerHTML = "";
-      const drinksGrid = document.createElement("div");
-      drinksGrid.className = "grid grid-cols-1 sm:grid-cols-2 gap-2";
-      for (const d of MENU.drinks) drinksGrid.appendChild(renderItemRow(d));
-      elDrinks.appendChild(drinksGrid);
+      const drinkCats = [
+        { id: "bebidas", title: "Bebidas", items: MENU.drinks }
+      ];
+      for (const cat of drinkCats) elDrinks.appendChild(renderDrinkCategory(cat));
+
+      // Default: tacos abierto
+      setOpenFoodCat(state.openFoodCat || "tacos");
+      setOpenDrinkCat(state.openDrinkCat || "bebidas");
     }
 
     function addQty(id, delta) {
@@ -516,6 +690,27 @@
       document.querySelectorAll("[data-qty-for]").forEach(el => {
         const id = el.dataset.qtyFor;
         el.textContent = String(state.qty.get(id) || 0);
+      });
+
+      // Badge por categoría (cantidad total)
+      const catCounts = new Map();
+      for (const cat of MENU.foods) {
+        const id = catId(cat);
+        const n = cat.items.reduce((sum, it) => sum + (state.qty.get(it.id) || 0), 0);
+        catCounts.set(id, n);
+      }
+
+      document.querySelectorAll("[data-food-badge]").forEach(b => {
+        const id = b.dataset.foodBadge;
+        const n = catCounts.get(id) || 0;
+        b.textContent = String(n);
+        b.classList.toggle("hidden", n <= 0);
+      });
+
+      const drinkCount = MENU.drinks.reduce((sum, it) => sum + (state.qty.get(it.id) || 0), 0);
+      document.querySelectorAll("[data-drink-badge]").forEach(b => {
+        b.textContent = String(drinkCount);
+        b.classList.toggle("hidden", drinkCount <= 0);
       });
 
       const lines = [];
@@ -554,9 +749,30 @@
       elFolio.textContent = `Folio #${String(peekFolio()).padStart(4, "0")}`;
     }
 
+    function updateNameVisibility() {
+      const needsName = state.orderType === "llevar" || state.orderType === "domicilio";
+      const hideForPlatform = state.orderType === "domicilio" && state.platformEnabled;
+      nameBlock.classList.toggle("hidden", !(needsName && !hideForPlatform));
+    }
+
     function updateDeliveryVisibility() {
       const isDelivery = state.orderType === "domicilio";
       deliveryBlock.classList.toggle("hidden", !isDelivery);
+
+      // Si es plataforma, no pedimos dirección/nombre; solo referencia + folio
+      const isPlatform = isDelivery && state.platformEnabled;
+      addrBlock?.classList.toggle("hidden", isPlatform);
+      mapFrame?.parentElement?.classList.toggle("hidden", isPlatform);
+      document.getElementById("openMaps")?.parentElement?.classList.toggle("hidden", isPlatform);
+
+      const refLabel = document.getElementById("refLabel");
+      const refHelp = document.getElementById("refHelp");
+      if (refLabel) refLabel.textContent = isPlatform ? "Folio pedido / Referencia" : "Referencia (opcional)";
+      if (refHelp) refHelp.classList.toggle("hidden", !isPlatform);
+      if (!isDelivery) {
+        if (refLabel) refLabel.textContent = "Referencia (opcional)";
+        if (refHelp) refHelp.classList.add("hidden");
+      }
     }
 
     let mapTimer;
@@ -578,11 +794,19 @@
       lines.push(`Tipo: ${getTypeLabel()}`);
       lines.push(`Pago: ${getPayLabel()}`);
 
-      if (state.orderType === "domicilio") {
-        if (state.address) lines.push(`Dirección: ${state.address}`);
-        if (state.reference) lines.push(`Referencia: ${state.reference}`);
-        if (state.platformEnabled && (state.platformId || state.platform)) {
-          lines.push(`Plataforma: ${state.platform} ${state.platformId ? "(" + state.platformId + ")" : ""}`);
+      const isDelivery = state.orderType === "domicilio";
+      const isPlatform = isDelivery && state.platformEnabled;
+
+      if (state.customerName && state.customerName.trim() && !isPlatform) {
+        lines.push(`Cliente: ${state.customerName.trim()}`);
+      }
+
+      if (isDelivery) {
+        if (isPlatform) {
+          lines.push(`Plataforma: ${state.platform}${state.platformId ? " (" + state.platformId + ")" : ""}${state.reference ? " — " + state.reference : ""}`);
+        } else {
+          if (state.address) lines.push(`Dirección: ${state.address}`);
+          if (state.reference) lines.push(`Referencia: ${state.reference}`);
         }
       }
 
@@ -610,20 +834,35 @@
       document.getElementById("rType").textContent = getTypeLabel();
       document.getElementById("rPay").textContent = getPayLabel();
 
+      const rNameRow = document.getElementById("rNameRow");
+      const rName = document.getElementById("rName");
       const rDelivery = document.getElementById("rDelivery");
       const rAddr = document.getElementById("rAddr");
       const rPlatform = document.getElementById("rPlatform");
       const rPlat = document.getElementById("rPlat");
 
-      if (state.orderType === "domicilio") {
-        rDelivery.classList.remove("hidden");
-        rAddr.textContent = `${state.address || "(sin dirección)"}${state.reference ? " — " + state.reference : ""}`;
-        if (state.platformEnabled) {
+      const isDelivery = state.orderType === "domicilio";
+      const isPlatform = isDelivery && state.platformEnabled;
+
+      if (state.customerName && state.customerName.trim() && !isPlatform) {
+        rNameRow.classList.remove("hidden");
+        rName.textContent = state.customerName.trim();
+      } else {
+        rNameRow.classList.add("hidden");
+        rName.textContent = "";
+      }
+
+      if (isDelivery) {
+        if (isPlatform) {
+          rDelivery.classList.add("hidden");
+          rAddr.textContent = "";
           rPlatform.classList.remove("hidden");
-          rPlat.textContent = `${state.platform}${state.platformId ? " (" + state.platformId + ")" : ""}`;
+          rPlat.textContent = `${state.platform}${state.platformId ? " (" + state.platformId + ")" : ""}${state.reference ? " — " + state.reference : ""}`;
         } else {
           rPlatform.classList.add("hidden");
           rPlat.textContent = "";
+          rDelivery.classList.remove("hidden");
+          rAddr.textContent = `${state.address || "(sin dirección)"}${state.reference ? " — " + state.reference : ""}`;
         }
       } else {
         rDelivery.classList.add("hidden");
@@ -660,6 +899,7 @@
 
     function clearOrder() {
       state.qty.clear();
+      state.customerName = "";
       state.address = "";
       state.reference = "";
       state.platformEnabled = false;
@@ -669,8 +909,11 @@
       platformBlock.classList.add("hidden");
       platformSelect.value = "Didi";
       platformId.value = "";
+      if (nameInput) nameInput.value = "";
       if (addressInput) addressInput.value = "";
       if (refInput) refInput.value = "";
+      updateNameVisibility();
+      updateDeliveryVisibility();
       renderSummary();
     }
 
@@ -707,6 +950,7 @@
       btn.addEventListener("click", () => {
         state.orderType = btn.dataset.orderType;
         setSelected(document.querySelectorAll(".orderTypeBtn"), b => b.dataset.orderType === state.orderType);
+        updateNameVisibility();
         updateDeliveryVisibility();
         renderSummary();
       });
@@ -723,6 +967,8 @@
     platformToggle.addEventListener("change", (e) => {
       state.platformEnabled = Boolean(e.target.checked);
       platformBlock.classList.toggle("hidden", !state.platformEnabled);
+      updateNameVisibility();
+      updateDeliveryVisibility();
     });
 
     platformSelect.addEventListener("change", (e) => { state.platform = e.target.value; });
@@ -732,6 +978,8 @@
       state.address = e.target.value;
       updateMapDebounced();
     });
+
+    nameInput?.addEventListener("input", (e) => { state.customerName = e.target.value; });
 
     refInput?.addEventListener("input", (e) => { state.reference = e.target.value; });
 
@@ -757,8 +1005,23 @@
         alert("Agrega al menos un producto.");
         return;
       }
-      if (state.orderType === "domicilio" && (!state.address || !state.address.trim())) {
+
+      const isDelivery = state.orderType === "domicilio";
+      const isToGo = state.orderType === "llevar";
+      const isPlatform = isDelivery && state.platformEnabled;
+
+      if ((isToGo || isDelivery) && !isPlatform && (!state.customerName || !state.customerName.trim())) {
+        alert("Escribe el nombre del cliente.");
+        return;
+      }
+
+      if (isDelivery && !isPlatform && (!state.address || !state.address.trim())) {
         alert("Para domicilio, escribe la dirección.");
+        return;
+      }
+
+      if (isPlatform && (!state.platformId || !state.platformId.trim()) && (!state.reference || !state.reference.trim())) {
+        alert("Para plataforma, agrega al menos el Folio/ID o la referencia del pedido.");
         return;
       }
 
@@ -772,6 +1035,7 @@
         branch: state.branch,
         orderType: state.orderType,
         payMethod: state.payMethod,
+        customerName: state.customerName,
         address: state.address,
         reference: state.reference,
         platformEnabled: state.platformEnabled,
@@ -784,14 +1048,36 @@
       clearOrder();
     });
 
+    function setViewMode(mode) {
+      const icon = mode === "icons";
+      document.body.classList.toggle("icon-mode", icon);
+      localStorage.setItem("ldc_view", icon ? "icons" : "text");
+
+      const t = document.getElementById("viewText");
+      const i = document.getElementById("viewIcons");
+      const onCls = ["border-amber-400", "bg-amber-50"].filter(Boolean);
+      if (t && i) {
+        t.classList.toggle("border-amber-400", !icon);
+        t.classList.toggle("bg-amber-50", !icon);
+        i.classList.toggle("border-amber-400", icon);
+        i.classList.toggle("bg-amber-50", icon);
+      }
+    }
+
+    document.getElementById("viewText")?.addEventListener("click", () => setViewMode("text"));
+    document.getElementById("viewIcons")?.addEventListener("click", () => setViewMode("icons"));
+
     // Initial render
     buildMenu();
 
     setSelected(document.querySelectorAll(".branchBtn"), b => b.dataset.branch === state.branch);
     setSelected(document.querySelectorAll(".orderTypeBtn"), b => b.dataset.orderType === state.orderType);
     setSelected(document.querySelectorAll(".payBtn"), b => b.dataset.pay === state.payMethod);
+    updateNameVisibility();
     updateDeliveryVisibility();
     renderSummary();
+
+    setViewMode(localStorage.getItem("ldc_view") === "icons" ? "icons" : "text");
   </script>
 </body>
 </html>
