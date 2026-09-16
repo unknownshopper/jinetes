@@ -6,6 +6,10 @@
   <title>Comandero - Los de Costilla</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" referrerpolicy="no-referrer" />
+
+  <!-- Firebase (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
   <style>
     body.icon-mode .mode-text { display: none; }
     body.icon-mode .mode-icon { display: flex !important; }
@@ -91,6 +95,14 @@
           <button data-branch="atasta" type="button" class="branchBtn rounded-full border border-gray-300 px-3 py-2 text-xs font-extrabold text-gray-700">Atasta</button>
         </div>
         <div class="flex items-center gap-2">
+          <div class="no-print hidden sm:flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 text-xs text-gray-600">
+            <i class="fa-solid fa-user"></i>
+            <span id="userLabel">Invitado</span>
+          </div>
+          <button id="btnLogout" type="button" class="no-print hidden inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Salir
+          </button>
           <button id="btnNew" type="button" class="inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50">
             <i class="fa-solid fa-rotate"></i>
             Nueva
@@ -231,6 +243,41 @@
       </div>
     </div>
   </header>
+
+  <!-- Auth modal -->
+  <div id="authModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="relative mx-auto mt-16 w-[92%] max-w-md">
+      <div class="rounded-2xl bg-white border border-gray-200 shadow-lg p-5">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <p class="text-xs text-gray-500">Los de Costilla</p>
+            <h2 class="text-lg font-extrabold">Iniciar sesión</h2>
+            <p class="mt-1 text-sm text-gray-600">Acceso por rol (gerencia / comandero por sucursal).</p>
+          </div>
+        </div>
+
+        <form id="authForm" class="mt-4 space-y-3">
+          <div>
+            <label class="text-xs font-semibold text-gray-700">Correo</label>
+            <input id="authEmail" type="email" autocomplete="username" placeholder="op@losdecostilla.com" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-200" required />
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-gray-700">Contraseña</label>
+            <input id="authPass" type="password" autocomplete="current-password" placeholder="••••••••" class="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-200" required />
+            <p class="mt-1 text-[11px] text-gray-500">Demo: por ahora el acceso asigna rol por correo. Firebase Auth se activa al formalizar.</p>
+          </div>
+
+          <p id="authError" class="hidden text-sm font-semibold text-red-700"></p>
+
+          <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-3 text-sm font-extrabold text-white hover:bg-black">
+            <i class="fa-solid fa-lock"></i>
+            Entrar
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <main class="max-w-6xl mx-auto px-4 py-6">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -434,7 +481,76 @@
     const btnPrint = document.getElementById("btnPrint");
     const btnWhats = document.getElementById("btnWhats");
 
+    const authModal = document.getElementById("authModal");
+    const authForm = document.getElementById("authForm");
+    const authEmail = document.getElementById("authEmail");
+    const authPass = document.getElementById("authPass");
+    const authError = document.getElementById("authError");
+    const userLabel = document.getElementById("userLabel");
+    const btnLogout = document.getElementById("btnLogout");
+
     function money(n) { return "$" + n.toLocaleString("es-MX"); }
+
+    function normalizeEmail(s) {
+      return String(s || "").trim().toLowerCase();
+    }
+
+    function roleFromEmail(email) {
+      const e = normalizeEmail(email);
+      if (e === "op@losdecostilla.com") return { role: "op", branch: "" };
+      if (/^at\d+@/i.test(e)) return { role: "comandero", branch: "atasta" };
+      if (/^ta\d+@/i.test(e)) return { role: "comandero", branch: "tamulte" };
+      return { role: "comandero", branch: state.branch };
+    }
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyANTQpX1J7Vj-AIucarAnjwIeovsvyiH7M",
+      authDomain: "losde-costilla.firebaseapp.com",
+      projectId: "losde-costilla",
+      storageBucket: "losde-costilla.firebasestorage.app",
+      messagingSenderId: "603240444622",
+      appId: "1:603240444622:web:dfe76bcc12082df2fc969f"
+    };
+
+    const firebaseApp = firebase.initializeApp(firebaseConfig);
+    const firebaseAuth = firebase.auth();
+
+    function applyAuthUI(user) {
+      const email = user?.email ? normalizeEmail(user.email) : "";
+      if (userLabel) userLabel.textContent = email || "Invitado";
+
+      if (btnLogout) btnLogout.classList.toggle("hidden", !email);
+      const userPill = userLabel?.parentElement;
+      if (userPill) userPill.classList.toggle("hidden", !email);
+
+      const { role, branch } = roleFromEmail(email);
+      state.userEmail = email;
+      state.userRole = role;
+
+      // Comandero: sucursal fija, esconder botones de sucursal
+      const branchBtns = document.querySelectorAll(".branchBtn");
+      if (role !== "op") {
+        branchBtns.forEach(b => b.classList.add("hidden"));
+        if (branch) {
+          state.branch = branch;
+          localStorage.setItem("ldc_branch", state.branch);
+          setSelected(document.querySelectorAll(".branchBtn"), b => b.dataset.branch === state.branch);
+        }
+      } else {
+        branchBtns.forEach(b => b.classList.remove("hidden"));
+      }
+    }
+
+    function requireAuth() {
+      firebaseAuth.onAuthStateChanged((user) => {
+        if (user) {
+          applyAuthUI(user);
+          authModal?.classList.add("hidden");
+        } else {
+          authModal?.classList.remove("hidden");
+        }
+      });
+    }
 
     function getSales() {
       try {
@@ -1067,6 +1183,36 @@
       }
     }
 
+    authForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      authError?.classList.add("hidden");
+      const email = normalizeEmail(authEmail?.value);
+      const pass = String(authPass?.value || "");
+
+      if (!email || !pass) {
+        if (authError) {
+          authError.textContent = "Escribe correo y contraseña.";
+          authError.classList.remove("hidden");
+        }
+        return;
+      }
+
+      try {
+        await firebaseAuth.signInWithEmailAndPassword(email, pass);
+        authModal?.classList.add("hidden");
+      } catch {
+        if (authError) {
+          authError.textContent = "No se pudo iniciar sesión.";
+          authError.classList.remove("hidden");
+        }
+      }
+    });
+
+    btnLogout?.addEventListener("click", async () => {
+      await firebaseAuth.signOut();
+      location.reload();
+    });
+
     document.getElementById("viewText")?.addEventListener("click", () => setViewMode("text"));
     document.getElementById("viewIcons")?.addEventListener("click", () => setViewMode("icons"));
 
@@ -1081,6 +1227,8 @@
     renderSummary();
 
     setViewMode(localStorage.getItem("ldc_view") === "icons" ? "icons" : "text");
+
+    requireAuth();
   </script>
 </body>
 </html>
