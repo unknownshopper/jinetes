@@ -63,7 +63,7 @@
       <div class="rounded-2xl bg-white border border-gray-200 shadow-lg p-5">
         <p class="text-xs text-gray-500">Los de Costilla</p>
         <h2 class="text-lg font-extrabold">Iniciar sesión</h2>
-        <p class="mt-1 text-sm text-gray-600">Solo acceso gerencia (op/ger).</p>
+        <p class="mt-1 text-sm text-gray-600">Acceso restringido al administrador del sistema.</p>
 
         <form id="authForm" class="mt-4 space-y-3">
           <div>
@@ -86,7 +86,7 @@
     </div>
   </div>
 
-  <main class="max-w-5xl mx-auto px-4 py-6 space-y-6">
+  <main id="appMain" class="max-w-5xl mx-auto px-4 py-6 space-y-6 hidden">
     <section class="rounded-2xl border border-gray-200 p-4">
       <div class="flex items-start justify-between gap-3 flex-wrap">
         <div>
@@ -114,6 +114,37 @@
 
       <p id="empty" class="mt-3 text-sm text-gray-600 hidden">Sin actividad aún.</p>
       <p class="mt-3 text-[11px] text-gray-500">Nota: el log es global solo si Firestore está habilitado y las reglas permiten escribir/leer.</p>
+    </section>
+
+    <section class="rounded-2xl border border-gray-200 p-4">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h2 class="text-base font-extrabold">Vistas públicas</h2>
+          <p class="text-xs text-gray-500">Visitas sin login a cualquier página (anónimas). Útil para saber si están curioseando el sistema.</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-gray-600">
+          <span class="rounded-full bg-amber-50 border border-amber-200 px-3 py-1">Colección: <span class="font-extrabold">public_hits</span></span>
+          <span class="rounded-full bg-gray-100 border border-gray-200 px-3 py-1">Últimas: <span id="hitsTotal" class="font-extrabold">—</span></span>
+        </div>
+      </div>
+
+      <div id="hitsPages" class="mt-3 flex flex-wrap gap-2"></div>
+
+      <div class="mt-4 overflow-auto rounded-xl border border-gray-200">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-50 text-gray-600">
+            <tr>
+              <th class="text-left px-3 py-2 font-extrabold">Fecha/hora</th>
+              <th class="text-left px-3 py-2 font-extrabold">Página</th>
+              <th class="text-left px-3 py-2 font-extrabold">Visitante</th>
+              <th class="text-left px-3 py-2 font-extrabold">Referer</th>
+            </tr>
+          </thead>
+          <tbody id="hitsRows" class="divide-y divide-gray-100"></tbody>
+        </table>
+      </div>
+
+      <p id="hitsEmpty" class="mt-3 text-sm text-gray-600 hidden">Sin vistas públicas aún.</p>
     </section>
   </main>
 
@@ -144,16 +175,20 @@
     const rows = document.getElementById("rows");
     const empty = document.getElementById("empty");
 
+    const hitsRows = document.getElementById("hitsRows");
+    const hitsEmpty = document.getElementById("hitsEmpty");
+    const hitsTotal = document.getElementById("hitsTotal");
+    const hitsPages = document.getElementById("hitsPages");
+
     function normalizeEmail(s) { return String(s || "").trim().toLowerCase(); }
 
-    function isAdminEmail(email) {
-      const e = normalizeEmail(email);
-      return e === "op@losdecostilla.com" || e === "ger@losdecostilla.com";
+    function canAccessAdminInfo(email) {
+      return normalizeEmail(email) === "the@unknownshoppers.com";
     }
 
     function roleFromEmail(email) {
       const e = normalizeEmail(email);
-      if (e === "op@losdecostilla.com" || e === "ger@losdecostilla.com") return { role: "admin", branch: "" };
+      if (["op@losdecostilla.com", "ger@losdecostilla.com", "the@unknownshoppers.com"].includes(e)) return { role: "admin", branch: "" };
       if (/^at\d+@/i.test(e)) return { role: "comandero", branch: "atasta" };
       if (/^ta\d+@/i.test(e)) return { role: "comandero", branch: "tamulte" };
       if (e === "visor@losdecostilla.com") return { role: "visor", branch: "" };
@@ -186,6 +221,76 @@
         });
       } catch {
         // ignore
+      }
+    }
+
+    function ldcAnonId() {
+      let id = localStorage.getItem("ldc_anon_id");
+      if (!id) {
+        id = "a_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+        localStorage.setItem("ldc_anon_id", id);
+      }
+      return id;
+    }
+
+    async function writePublicHitOnce(page) {
+      try {
+        const key = `ldc_ph_${page}`;
+        const last = Number(localStorage.getItem(key) || "0");
+        if (Date.now() - last < 10 * 60 * 1000) return;
+        localStorage.setItem(key, String(Date.now()));
+        await db.collection("public_hits").add({
+          ts: firebase.firestore.FieldValue.serverTimestamp(),
+          page,
+          anonId: ldcAnonId(),
+          ref: document.referrer || ""
+        });
+      } catch {
+        // ignore
+      }
+    }
+
+    async function loadPublicHits() {
+      hitsRows.innerHTML = "";
+      hitsEmpty.classList.add("hidden");
+      hitsTotal.textContent = "—";
+      hitsPages.innerHTML = "";
+
+      try {
+        const snap = await db.collection("public_hits").orderBy("ts", "desc").limit(100).get();
+        if (snap.empty) {
+          hitsEmpty.classList.remove("hidden");
+          hitsTotal.textContent = "0";
+          return;
+        }
+
+        const counts = {};
+        let n = 0;
+        snap.forEach(doc => {
+          const d = doc.data() || {};
+          n++;
+          counts[d.page || "?"] = (counts[d.page || "?"] || 0) + 1;
+          const tr = document.createElement("tr");
+          const anon = String(d.anonId || "—");
+          tr.innerHTML = `
+            <td class="px-3 py-2 whitespace-nowrap text-gray-700">${formatTs(d.ts)}</td>
+            <td class="px-3 py-2 text-gray-900 font-semibold">${d.page || "—"}</td>
+            <td class="px-3 py-2 text-gray-500">${anon.length > 12 ? anon.slice(0, 12) + "…" : anon}</td>
+            <td class="px-3 py-2 text-gray-500 truncate max-w-[180px]">${d.ref || "—"}</td>
+          `;
+          hitsRows.appendChild(tr);
+        });
+
+        hitsTotal.textContent = String(n);
+        Object.entries(counts).sort((a, b) => b[1] - a[1]).forEach(([page, c]) => {
+          const chip = document.createElement("span");
+          chip.className = "rounded-full bg-gray-100 border border-gray-200 px-3 py-1 text-[11px] font-semibold text-gray-700";
+          chip.textContent = `${page}: ${c}`;
+          hitsPages.appendChild(chip);
+        });
+      } catch {
+        hitsEmpty.classList.remove("hidden");
+        hitsEmpty.textContent = "No se pudo leer public_hits (revisa reglas de Firestore).";
       }
     }
 
@@ -243,7 +348,7 @@
       location.reload();
     });
 
-    btnRefresh?.addEventListener("click", () => loadAudit());
+    btnRefresh?.addEventListener("click", () => { loadAudit(); loadPublicHits(); });
 
     auth.onAuthStateChanged(async (user) => {
       const email = user?.email ? normalizeEmail(user.email) : "";
@@ -252,10 +357,11 @@
         userLabel.textContent = "—";
         btnLogout.classList.add("hidden");
         authModal.classList.remove("hidden");
+        writePublicHitOnce("infdmn.html");
         return;
       }
 
-      if (!isAdminEmail(email)) {
+      if (!canAccessAdminInfo(email)) {
         // No admins aquí
         window.location.replace(email === "visor@losdecostilla.com" ? "visor.html" : "comand.html");
         return;
@@ -264,9 +370,11 @@
       userLabel.textContent = email;
       btnLogout.classList.remove("hidden");
       authModal.classList.add("hidden");
+      document.getElementById("appMain")?.classList.remove("hidden");
 
       await writeAudit(user);
       await loadAudit();
+      await loadPublicHits();
     });
   </script>
 </body>

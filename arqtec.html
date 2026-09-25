@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arquitectura & Hardware — Los de Costilla</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-white text-gray-900 antialiased">
+  <div class="h-2 w-full bg-amber-700"></div>
+
+  <header class="bg-white border-b border-amber-100">
+    <div class="max-w-5xl mx-auto px-4 py-10 text-center">
+      <img src="tus.png" alt="The Unknown Shopper" class="mx-auto h-14 w-auto" />
+      <p class="mt-4 text-xs font-extrabold tracking-widest text-amber-800 uppercase">Los de Costilla</p>
+      <h1 class="mt-2 text-3xl md:text-5xl font-extrabold">Arquitectura de instalación</h1>
+      <p class="mt-3 text-gray-700 text-lg md:text-xl">Hardware mínimo (eficaz) + cotización orientativa</p>
+
+      <div class="mt-6 inline-flex flex-wrap items-center justify-center gap-2">
+        <a href="propuesta.html" class="inline-flex items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-xs font-extrabold text-gray-700 hover:bg-gray-50">
+          <i class="fa-solid fa-file-lines"></i>
+          Ver propuesta
+        </a>
+        <a href="ventas.html" class="inline-flex items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-xs font-extrabold text-gray-700 hover:bg-gray-50">
+          <i class="fa-solid fa-chart-line"></i>
+          Ver dashboard
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-10 space-y-10">
+    <section class="rounded-2xl border border-gray-200 bg-white p-6">
+      <h2 class="text-xl font-extrabold flex items-center gap-2"><i class="fa-solid fa-diagram-project text-amber-700"></i> Diagrama (instalación mínima)</h2>
+      <p class="mt-2 text-sm text-gray-600">Para operar con rapidez y sin inversiones infladas: <strong>1 celular</strong> + <strong>1 impresora térmica</strong> por sucursal.</p>
+
+      <div class="mt-6 grid md:grid-cols-3 gap-4 items-stretch">
+        <div class="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+          <p class="text-xs font-extrabold text-gray-500 uppercase">Operación</p>
+          <h3 class="mt-2 text-lg font-extrabold">📱 Celular (comandero)</h3>
+          <ul class="mt-3 text-sm text-gray-700 space-y-1 list-disc pl-5">
+            <li>Captura rápida de pedidos</li>
+            <li>Cierre de venta</li>
+            <li>WhatsApp manual (opcional)</li>
+          </ul>
+        </div>
+
+        <div class="rounded-2xl border border-gray-200 bg-white p-5 flex items-center justify-center">
+          <div class="text-center">
+            <div class="text-3xl text-amber-700"><i class="fa-solid fa-arrow-right-long"></i></div>
+            <p class="mt-2 text-xs text-gray-500">Bluetooth / WiFi / USB OTG (según modelo)</p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+          <p class="text-xs font-extrabold text-gray-500 uppercase">Salida</p>
+          <h3 class="mt-2 text-lg font-extrabold">🧾 Impresora térmica 80mm</h3>
+          <ul class="mt-3 text-sm text-gray-700 space-y-1 list-disc pl-5">
+            <li>Nota de consumo / ticket</li>
+            <li>Rápida y económica</li>
+            <li>Ideal para alto volumen</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-5 text-sm text-blue-900">
+        <p class="font-extrabold">Nota</p>
+        <p class="mt-1">La arquitectura está pensada para crecer: al activar nube (Firebase/Firestore) la matriz puede ver ventas en tiempo real sin depender del dispositivo del cajero.</p>
+      </div>
+    </section>
+
+    <section class="rounded-2xl border border-gray-200 bg-white p-6">
+      <h2 class="text-xl font-extrabold flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench text-amber-700"></i> Requerimientos por sucursal</h2>
+
+      <div class="mt-5 space-y-3">
+        <div class="rounded-xl border border-gray-200 p-4 flex items-start justify-between gap-4">
+          <div>
+            <p class="font-extrabold">Celular (Android recomendado)</p>
+            <p class="text-xs text-gray-500">Gama media o medio uso (pantalla cómoda). Ideal con batería en buen estado.</p>
+          </div>
+          <span class="shrink-0 rounded-full bg-amber-100 border border-amber-200 px-3 py-1 text-xs font-extrabold text-amber-900">1 por sucursal</span>
+        </div>
+
+        <div class="rounded-xl border border-gray-200 p-4 flex items-start justify-between gap-4">
+          <div>
+            <p class="font-extrabold">Impresora térmica 80mm (económica)</p>
+            <p class="text-xs text-gray-500">Bluetooth o WiFi. ESC/POS compatible.</p>
+          </div>
+          <span class="shrink-0 rounded-full bg-amber-100 border border-amber-200 px-3 py-1 text-xs font-extrabold text-amber-900">1 por sucursal</span>
+        </div>
+
+        <div class="rounded-xl border border-gray-200 p-4 flex items-start justify-between gap-4">
+          <div>
+            <p class="font-extrabold">Consumibles</p>
+            <p class="text-xs text-gray-500">Rollos térmicos 80mm (stock básico semanal).</p>
+          </div>
+          <span class="shrink-0 rounded-full bg-gray-100 border border-gray-200 px-3 py-1 text-xs font-extrabold text-gray-800">Recurrente</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="rounded-2xl border border-gray-200 bg-white p-6">
+      <h2 class="text-xl font-extrabold flex items-center gap-2"><i class="fa-solid fa-receipt text-amber-700"></i> Cotización orientativa (hardware)</h2>
+      <p class="mt-2 text-sm text-gray-600">Los montos pueden variar por marca y disponibilidad. La meta es mantenerlo <strong>económico y funcional</strong>.</p>
+
+      <div class="mt-5 grid md:grid-cols-2 gap-4">
+        <div class="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+          <p class="text-xs font-extrabold text-gray-500 uppercase">Impresora térmica 80mm</p>
+          <p class="mt-2 text-3xl font-extrabold text-gray-900">$900 – $2,200</p>
+          <p class="mt-1 text-xs text-gray-600">MXN (económica a gama media)</p>
+        </div>
+        <div class="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+          <p class="text-xs font-extrabold text-gray-500 uppercase">Rollos térmicos (paquete)</p>
+          <p class="mt-2 text-3xl font-extrabold text-gray-900">$150 – $350</p>
+          <p class="mt-1 text-xs text-gray-600">MXN (según cantidad/calidad)</p>
+        </div>
+      </div>
+
+      <div class="mt-5 rounded-2xl border border-gray-200 p-5 text-sm text-gray-700">
+        <p class="font-extrabold">Recomendación</p>
+        <p class="mt-1">Iniciar con impresoras térmicas económicas. Si el volumen lo exige, se migra a modelos más robustos sin cambiar el sistema.</p>
+      </div>
+    </section>
+
+    <footer class="py-10 text-center text-xs text-gray-500">
+      <p>Documento de arquitectura/hardware (referencia). The Unknown Shopper.</p>
+    </footer>
+  </main>
+
+  <!-- Tracking ligero: visitas públicas (public_hits) + accesos autenticados (audit_log) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script>
+    (function () {
+      const PAGE = "arqtec.html";
+      firebase.initializeApp({
+        apiKey: "AIzaSyANTQpX1J7Vj-AIucarAnjwIeovsvyiH7M",
+        authDomain: "losde-costilla.firebaseapp.com",
+        projectId: "losde-costilla",
+        storageBucket: "losde-costilla.firebasestorage.app",
+        messagingSenderId: "603240444622",
+        appId: "1:603240444622:web:dfe76bcc12082df2fc969f"
+      });
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      const norm = (s) => String(s || "").trim().toLowerCase();
+      const roleFromEmail = (email) => {
+        const e = norm(email);
+        if (["op@losdecostilla.com", "ger@losdecostilla.com", "the@unknownshoppers.com"].includes(e)) return { role: "admin", branch: "" };
+        if (/^at\d+@/i.test(e)) return { role: "comandero", branch: "atasta" };
+        if (/^ta\d+@/i.test(e)) return { role: "comandero", branch: "tamulte" };
+        if (e === "visor@losdecostilla.com") return { role: "visor", branch: "" };
+        return { role: "unknown", branch: "" };
+      };
+
+      const anonId = () => {
+        let id = localStorage.getItem("ldc_anon_id");
+        if (!id) {
+          id = "a_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+          localStorage.setItem("ldc_anon_id", id);
+        }
+        return id;
+      };
+
+      const throttled = () => {
+        const key = `ldc_ph_${PAGE}`;
+        const last = Number(localStorage.getItem(key) || "0");
+        if (Date.now() - last < 10 * 60 * 1000) return true;
+        localStorage.setItem(key, String(Date.now()));
+        return false;
+      };
+
+      auth.onAuthStateChanged((user) => {
+        if (user?.email) {
+          const key = `ldc_audit_${PAGE}_${user.uid}`;
+          if (sessionStorage.getItem(key)) return;
+          sessionStorage.setItem(key, "1");
+          const { role, branch } = roleFromEmail(user.email);
+          db.collection("audit_log").add({
+            ts: firebase.firestore.FieldValue.serverTimestamp(),
+            uid: user.uid, email: norm(user.email), role, branch, page: PAGE
+          }).catch(() => {});
+        } else if (!throttled()) {
+          db.collection("public_hits").add({
+            ts: firebase.firestore.FieldValue.serverTimestamp(),
+            page: PAGE, anonId: anonId(), ref: document.referrer || ""
+          }).catch(() => {});
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

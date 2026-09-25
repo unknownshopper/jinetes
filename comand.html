@@ -10,6 +10,7 @@
   <!-- Firebase (compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
   <style>
     body.icon-mode .mode-text { display: none; }
     body.icon-mode .mode-icon { display: flex !important; }
@@ -514,6 +515,55 @@
 
     const firebaseApp = firebase.initializeApp(firebaseConfig);
     const firebaseAuth = firebase.auth();
+    const firebaseDb = firebase.firestore();
+
+    async function writeAuditOnce(user, page) {
+      const email = user?.email ? normalizeEmail(user.email) : "";
+      if (!email) return;
+      const key = `ldc_audit_${page}_${user.uid}`;
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+
+      const { role, branch } = roleFromEmail(email);
+      try {
+        await firebaseDb.collection("audit_log").add({
+          ts: firebase.firestore.FieldValue.serverTimestamp(),
+          uid: user.uid,
+          email,
+          role,
+          branch,
+          page
+        });
+      } catch {
+        // ignore
+      }
+    }
+
+    function ldcAnonId() {
+      let id = localStorage.getItem("ldc_anon_id");
+      if (!id) {
+        id = "a_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+        localStorage.setItem("ldc_anon_id", id);
+      }
+      return id;
+    }
+
+    async function writePublicHitOnce(page) {
+      try {
+        const key = `ldc_ph_${page}`;
+        const last = Number(localStorage.getItem(key) || "0");
+        if (Date.now() - last < 10 * 60 * 1000) return;
+        localStorage.setItem(key, String(Date.now()));
+        await firebaseDb.collection("public_hits").add({
+          ts: firebase.firestore.FieldValue.serverTimestamp(),
+          page,
+          anonId: ldcAnonId(),
+          ref: document.referrer || ""
+        });
+      } catch {
+        // ignore
+      }
+    }
 
     function applyAuthUI(user) {
       const email = user?.email ? normalizeEmail(user.email) : "";
@@ -546,8 +596,10 @@
         if (user) {
           applyAuthUI(user);
           authModal?.classList.add("hidden");
+          writeAuditOnce(user, "comand.html");
         } else {
           authModal?.classList.remove("hidden");
+          writePublicHitOnce("comand.html");
         }
       });
     }

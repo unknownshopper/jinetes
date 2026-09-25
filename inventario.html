@@ -6,6 +6,11 @@
   <title>Inventario - Los de Costilla</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" referrerpolicy="no-referrer" />
+
+  <!-- Firebase (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
   <style>
     @media print {
       @page { size: A4; margin: 12mm; }
@@ -141,6 +146,83 @@
   </main>
 
   <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyANTQpX1J7Vj-AIucarAnjwIeovsvyiH7M",
+      authDomain: "losde-costilla.firebaseapp.com",
+      projectId: "losde-costilla",
+      storageBucket: "losde-costilla.firebasestorage.app",
+      messagingSenderId: "603240444622",
+      appId: "1:603240444622:web:dfe76bcc12082df2fc969f"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    function normalizeEmail(s) { return String(s || "").trim().toLowerCase(); }
+
+    function roleFromEmail(email) {
+      const e = normalizeEmail(email);
+      if (["op@losdecostilla.com", "ger@losdecostilla.com", "the@unknownshoppers.com"].includes(e)) return { role: "admin", branch: "" };
+      if (/^at\d+@/i.test(e)) return { role: "comandero", branch: "atasta" };
+      if (/^ta\d+@/i.test(e)) return { role: "comandero", branch: "tamulte" };
+      if (e === "visor@losdecostilla.com") return { role: "visor", branch: "" };
+      return { role: "unknown", branch: "" };
+    }
+
+    async function writeAuditOnce(user, page) {
+      const email = user?.email ? normalizeEmail(user.email) : "";
+      if (!email) return;
+      const key = `ldc_audit_${page}_${user.uid}`;
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+
+      const { role, branch } = roleFromEmail(email);
+      try {
+        await db.collection("audit_log").add({
+          ts: firebase.firestore.FieldValue.serverTimestamp(),
+          uid: user.uid,
+          email,
+          role,
+          branch,
+          page
+        });
+      } catch {
+        // ignore
+      }
+    }
+
+    function ldcAnonId() {
+      let id = localStorage.getItem("ldc_anon_id");
+      if (!id) {
+        id = "a_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+        localStorage.setItem("ldc_anon_id", id);
+      }
+      return id;
+    }
+
+    async function writePublicHitOnce(page) {
+      try {
+        const key = `ldc_ph_${page}`;
+        const last = Number(localStorage.getItem(key) || "0");
+        if (Date.now() - last < 10 * 60 * 1000) return;
+        localStorage.setItem(key, String(Date.now()));
+        await db.collection("public_hits").add({
+          ts: firebase.firestore.FieldValue.serverTimestamp(),
+          page,
+          anonId: ldcAnonId(),
+          ref: document.referrer || ""
+        });
+      } catch {
+        // ignore
+      }
+    }
+
+    auth.onAuthStateChanged((user) => {
+      if (user) writeAuditOnce(user, "inventario.html");
+      else writePublicHitOnce("inventario.html");
+    });
+
     const state = {
       scope: localStorage.getItem("ldc_inv_scope") || "global"
     };
